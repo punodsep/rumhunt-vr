@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6e0bdfabd9fc9b64bbf6eddb10adff94, type: 3}
   m_Name: Gesture_JeebProkNa
   m_EditorClassIdentifier: Assembly-CSharp::GestureData
-  gestureName: Gesture_01
+  gestureName: Gesture_JeebProkNa
   leftHandBones:
   - boneId: 0
     localPosition: {x: -0.0000000064028427, y: -0.0000000055879354, z: 0}
@@ -121,7 +121,7 @@ MonoBehaviour:
     localPosition: {x: 0.05824244, y: 0.010753691, z: 0.07914465}
   leftHandPosRelHead: {x: -0.1451473, y: 1.0872847, z: 0.26415497}
   rightHandPosRelHead: {x: 0.13928914, y: 1.0878811, z: 0.28217474}
-  boneThreshold: 0.08
-  positionThreshold: 0.25
-  minMatchBones: 12
-  holdDuration: 0.2
+  boneThreshold: 0.02
+  positionThreshold: 0.12
+  minMatchBones: 35
+  holdDuration: 0.3

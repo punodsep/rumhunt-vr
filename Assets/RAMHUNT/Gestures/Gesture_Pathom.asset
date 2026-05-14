@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6e0bdfabd9fc9b64bbf6eddb10adff94, type: 3}
   m_Name: Gesture_Pathom
   m_EditorClassIdentifier: Assembly-CSharp::GestureData
-  gestureName: Gesture_01
+  gestureName: Gesture_Pathom
   leftHandBones:
   - boneId: 0
     localPosition: {x: 0.0000000088475645, y: 0.0000000055879354, z: 0}
@@ -121,7 +121,7 @@ MonoBehaviour:
     localPosition: {x: 0.039944008, y: -0.0060494877, z: 0.08577802}
   leftHandPosRelHead: {x: 0.023435459, y: 0.95515996, z: 0.1754275}
   rightHandPosRelHead: {x: -0.05009566, y: 0.9356406, z: 0.23049021}
-  boneThreshold: 0.08
-  positionThreshold: 0.25
-  minMatchBones: 12
-  holdDuration: 0.2
+  boneThreshold: 0.02
+  positionThreshold: 0.12
+  minMatchBones: 35
+  holdDuration: 0.3
