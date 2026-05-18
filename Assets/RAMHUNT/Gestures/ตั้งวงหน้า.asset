@@ -10,9 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6e0bdfabd9fc9b64bbf6eddb10adff94, type: 3}
-  m_Name: Gesture_FrontHand
+  m_Name: "\u0E15\u0E31\u0E49\u0E07\u0E27\u0E07\u0E2B\u0E19\u0E49\u0E32"
   m_EditorClassIdentifier: Assembly-CSharp::GestureData
-  gestureName: Gesture_FrontHand
+  gestureName: "\u0E15\u0E31\u0E49\u0E07\u0E27\u0E07\u0E2B\u0E19\u0E49\u0E32"
   leftHandBones:
   - boneId: 0
     localPosition: {x: 2.3283064e-10, y: 9.313226e-10, z: 0}
