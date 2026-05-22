@@ -9,44 +9,43 @@ public class GameManager : MonoBehaviour
     public static GameManager Instance { get; private set; }
 
     [Header("Rules")]
-    public int startHP = 3;        // HP ผู้เล่น
-    public float roundDuration = 60f;      // เวลาทั้งหมด (วินาที)
+    public int playerMaxHP = 5;
+    public int ghostMaxHP = 10;
 
     public event Action<GameState> OnStateChanged;
-    public event Action<int> OnHPChanged;
+    public event Action<int, int> OnPlayerHPChanged;  // (current, max)
+    public event Action<int, int> OnGhostHPChanged;   // (current, max)
     public event Action<int> OnScoreChanged;
 
     public GameState CurrentState { get; private set; }
     public int Score { get; private set; }
-    public int HP { get; private set; }
-    public float TimeRemaining { get; private set; }
+    public int PlayerHP { get; private set; }
+    public int GhostHP { get; private set; }
+    public int HighScore { get; private set; }
+
+    const string HighScoreKey = "RAMHUNT_HighScore";
 
     void Awake()
     {
         if (Instance != null) { Destroy(gameObject); return; }
         Instance = this;
+        HighScore = PlayerPrefs.GetInt(HighScoreKey, 0);
     }
 
     void Start() => SetState(GameState.Idle);
 
-    void Update()
-    {
-        if (CurrentState != GameState.Playing) return;
-        TimeRemaining -= Time.deltaTime;
-        if (TimeRemaining <= 0f) EndGame(false);
-    }
-
+    // ── Start / End ──────────────────────────────────────────────
     public void StartGame()
     {
         Score = 0;
-        HP = startHP;
-        TimeRemaining = roundDuration;
+        PlayerHP = playerMaxHP;
+        GhostHP = ghostMaxHP;
 
         OnScoreChanged?.Invoke(Score);
-        OnHPChanged?.Invoke(HP);
-        SetState(GameState.Countdown);
+        OnPlayerHPChanged?.Invoke(PlayerHP, playerMaxHP);
+        OnGhostHPChanged?.Invoke(GhostHP, ghostMaxHP);
 
-        // countdown 3 วิแล้วเริ่ม
+        SetState(GameState.Countdown);
         Invoke(nameof(BeginPlaying), 3f);
     }
 
@@ -56,23 +55,63 @@ public class GameManager : MonoBehaviour
         GestureChallenge.Instance.StartChallenge();
     }
 
+    // ── Score ────────────────────────────────────────────────────
     public void AddScore(int points)
     {
         Score += points;
         OnScoreChanged?.Invoke(Score);
     }
 
-    public void LoseHP()
+    // ── Damage ───────────────────────────────────────────────────
+    public void DamageGhost(int dmg)
     {
-        HP = Mathf.Max(0, HP - 1);
-        OnHPChanged?.Invoke(HP);
-        if (HP <= 0) EndGame(false);
+        GhostHP = Mathf.Max(0, GhostHP - dmg);
+        OnGhostHPChanged?.Invoke(GhostHP, ghostMaxHP);
+        if (GhostHP <= 0) EndGame(true);
     }
 
-    void EndGame(bool win)
+    public void DamagePlayer(int dmg = 1)
+    {
+        PlayerHP = Mathf.Max(0, PlayerHP - dmg);
+        OnPlayerHPChanged?.Invoke(PlayerHP, playerMaxHP);
+        if (PlayerHP <= 0) EndGame(false);
+    }
+
+    // ── End ──────────────────────────────────────────────────────
+    void EndGame(bool playerWon)
     {
         GestureChallenge.Instance.StopChallenge();
+
+        // บันทึก HighScore
+        if (Score > HighScore)
+        {
+            HighScore = Score;
+            PlayerPrefs.SetInt(HighScoreKey, HighScore);
+            PlayerPrefs.Save();
+        }
+
         SetState(GameState.GameOver);
+    }
+
+    public void ResetHighScore()
+    {
+        HighScore = 0;
+
+        PlayerPrefs.DeleteKey(HighScoreKey);
+        PlayerPrefs.Save();
+
+        // อัปเดต UI
+        ChallengeUI ui = FindFirstObjectByType<ChallengeUI>();
+
+        if (ui != null)
+        {
+            ui.highScoreText.text = "Best 0";
+
+            if (ui.newHighScoreText)
+                ui.newHighScoreText.gameObject.SetActive(false);
+        }
+
+        Debug.Log("High Score Reset");
     }
 
     public void RestartGame() =>
