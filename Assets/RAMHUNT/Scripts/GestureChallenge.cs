@@ -29,7 +29,7 @@ public class GestureChallenge : MonoBehaviour
     public int goodPoints = 100;
 
     public event Action<GestureData> OnNewChallenge;
-    public event Action<ScoreGrade> OnRoundEnd;
+    public event Action<ScoreGrade, int, int> OnRoundEnd;
 
     public GestureData CurrentTarget { get; private set; }
     public float TimeRemaining { get; private set; }
@@ -37,6 +37,8 @@ public class GestureChallenge : MonoBehaviour
 
     bool _roundEnded;
     Coroutine _challengeRoutine;
+
+    int _perfectCombo = 0;
 
     void Awake()
     {
@@ -129,24 +131,30 @@ public class GestureChallenge : MonoBehaviour
 
     void ProcessGrade(ScoreGrade grade)
     {
+        int multiplier = 1;
+
         switch (grade)
         {
             case ScoreGrade.Perfect:
-                GameManager.Instance.AddScore(perfectPoints);
+                _perfectCombo++;
+                multiplier = Mathf.Max(1, _perfectCombo); // x1, x2, x3...
+                GameManager.Instance.AddScore(perfectPoints * multiplier);
                 GameManager.Instance.DamageGhost(perfectGhostDmg);
                 break;
 
             case ScoreGrade.Good:
+                _perfectCombo = 0; // หยุด combo
                 GameManager.Instance.AddScore(goodPoints);
                 GameManager.Instance.DamageGhost(goodGhostDmg);
                 break;
 
             case ScoreGrade.Miss:
+                _perfectCombo = 0; // หยุด combo
                 GameManager.Instance.DamagePlayer(1);
                 break;
         }
 
-        OnRoundEnd?.Invoke(grade);
+        OnRoundEnd?.Invoke(grade, _perfectCombo, multiplier);
     }
 
     void PickNewGesture()

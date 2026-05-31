@@ -63,7 +63,7 @@ public class ChallengeUI : MonoBehaviour
         GameManager.Instance.OnScoreChanged -= OnScoreChanged;
 
         GestureChallenge.Instance.OnNewChallenge -= OnNewChallenge;
-        GestureChallenge.Instance.OnRoundEnd -= OnRoundEnd;
+        GestureChallenge.Instance.OnRoundEnd += OnRoundEnd;
     }
 
     void Start()
@@ -155,20 +155,21 @@ public class ChallengeUI : MonoBehaviour
         feedbackText.color = Color.white;
     }
 
-    void OnRoundEnd(ScoreGrade grade)
+    void OnRoundEnd(ScoreGrade grade, int combo, int multiplier)
     {
         StopCoroutine(nameof(ShowFeedbackRoutine));
 
         switch (grade)
         {
             case ScoreGrade.Perfect:
-                StartCoroutine(ShowFeedbackRoutine("PERFECT!", perfectColor));
+                string perfectMsg = combo >= 2
+                    ? $"PERFECT!  x{multiplier}"
+                    : "PERFECT!";
+                StartCoroutine(ShowFeedbackRoutine(perfectMsg, perfectColor));
                 break;
-
             case ScoreGrade.Good:
                 StartCoroutine(ShowFeedbackRoutine("Good", goodColor));
                 break;
-
             case ScoreGrade.Miss:
                 StartCoroutine(ShowFeedbackRoutine("Miss...", missColor));
                 break;
