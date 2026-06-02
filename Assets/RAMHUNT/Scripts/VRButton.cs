@@ -1,4 +1,3 @@
-// VRButton.cs — ใช้ Hand Anchor แทน Skeleton
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
@@ -6,17 +5,25 @@ using UnityEngine.UI;
 public class VRButton : MonoBehaviour
 {
     public UnityEvent OnPressed;
-    public Image buttonImage;
-    public Color normalColor = new Color(0.2f, 0.2f, 0.3f, 1f);
-    public Color pressedColor = new Color(0.5f, 0.3f, 1f, 1f);
 
-    [Header("Hand Reference")]
-    public Transform rightHand;
-    public Transform leftHand;
+    [Header("Sprites")]
+    public Image buttonImage;
+    public Sprite normalSprite;   // sprite ตั้งต้น
+    public Sprite pressedSprite;  // sprite ตอนกด
 
     [Header("Settings")]
-    public float activationDistance = 0.1f;
+    public Transform rightHand;
+    public Transform leftHand;
+    public float activationDistance = 0.15f;
+    public float resetDelay = 0.3f;  // กี่วินาทีก่อน reset กลับ
+
     float _cooldown;
+
+    void Start()
+    {
+        if (buttonImage && normalSprite)
+            buttonImage.sprite = normalSprite;
+    }
 
     void Update()
     {
@@ -29,24 +36,28 @@ public class VRButton : MonoBehaviour
     void CheckDistance(Vector3 handPos)
     {
         float dist = Vector3.Distance(handPos, transform.position);
-        Debug.Log($"[VRButton] dist: {dist:F3}");
 
         if (dist < activationDistance)
         {
             _cooldown = 1f;
-            OnPressed?.Invoke();
-            Debug.Log("[VRButton] PRESSED!");
-
-            if (buttonImage != null)
-            {
-                buttonImage.color = pressedColor;
-                Invoke(nameof(ResetColor), 0.3f);
-            }
+            StartCoroutine(PressSequence());
         }
     }
 
-    void ResetColor()
+    System.Collections.IEnumerator PressSequence()
     {
-        if (buttonImage != null) buttonImage.color = normalColor;
+        // เปลี่ยนเป็น pressed sprite
+        if (buttonImage && pressedSprite)
+            buttonImage.sprite = pressedSprite;
+
+        // รอนิดนึงให้เห็น feedback ก่อน
+        yield return new WaitForSeconds(resetDelay);
+
+        // reset กลับ normal
+        if (buttonImage && normalSprite)
+            buttonImage.sprite = normalSprite;
+
+        // fire event หลัง reset
+        OnPressed?.Invoke();
     }
 }
