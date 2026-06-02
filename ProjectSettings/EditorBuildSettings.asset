@@ -7,7 +7,7 @@ EditorBuildSettings:
   m_Scenes:
   - enabled: 1
     path: Assets/Scenes/Temple.unity
-    guid: e6ba6c5283e889644a301c4e28e4197e
+    guid: df967cb14dfba1345a1f3dc818c918eb
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
     com.unity.xr.management.loader_settings: {fileID: 11400000, guid: f4cc4628acf61654ebdbe0332ff63649, type: 2}

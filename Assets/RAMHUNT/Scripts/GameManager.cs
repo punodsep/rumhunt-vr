@@ -34,6 +34,12 @@ public class GameManager : MonoBehaviour
 
     void Start() => SetState(GameState.Idle);
 
+    void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.R))
+            ResetHighScore();
+    }
+
     // ── Start / End ──────────────────────────────────────────────
     public void StartGame()
     {

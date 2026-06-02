@@ -8,7 +8,11 @@ public class ChallengeUI : MonoBehaviour
     [Header("Challenge Display")]
     public TextMeshProUGUI gestureNameText;
     public Image timerBar;
-    public TextMeshProUGUI feedbackText;
+    public Image feedbackImage;
+    public Sprite perfectSprite;
+    public Sprite goodSprite;
+    public Sprite missSprite;
+    public TextMeshProUGUI countdownText;  // สำหรับ 3, 2, 1, Start!
 
     [Header("HP Bars — Player")]
     public Image playerHPBar;
@@ -34,23 +38,12 @@ public class ChallengeUI : MonoBehaviour
     public Color timerWarningColor = new Color(1f, 0.6f, 0.2f);
     public Color timerDangerColor = new Color(1f, 0.2f, 0.2f);
 
-    [Header("HP Bar Colors")]
-    public Color hpSafeColor = new Color(0.3f, 1f, 0.6f);
-    public Color hpWarningColor = new Color(1f, 0.6f, 0.2f);
-    public Color hpDangerColor = new Color(1f, 0.2f, 0.2f);
-
-    [Header("Feedback Colors")]
-    public Color perfectColor = new Color(1f, 0.9f, 0.2f);
-    public Color goodColor = new Color(0.3f, 1f, 0.5f);
-    public Color missColor = new Color(1f, 0.3f, 0.3f);
-
     void OnEnable()
     {
         GameManager.Instance.OnStateChanged += OnStateChanged;
         GameManager.Instance.OnPlayerHPChanged += OnPlayerHPChanged;
         GameManager.Instance.OnGhostHPChanged += OnGhostHPChanged;
         GameManager.Instance.OnScoreChanged += OnScoreChanged;
-
         GestureChallenge.Instance.OnNewChallenge += OnNewChallenge;
         GestureChallenge.Instance.OnRoundEnd += OnRoundEnd;
     }
@@ -61,9 +54,8 @@ public class ChallengeUI : MonoBehaviour
         GameManager.Instance.OnPlayerHPChanged -= OnPlayerHPChanged;
         GameManager.Instance.OnGhostHPChanged -= OnGhostHPChanged;
         GameManager.Instance.OnScoreChanged -= OnScoreChanged;
-
         GestureChallenge.Instance.OnNewChallenge -= OnNewChallenge;
-        GestureChallenge.Instance.OnRoundEnd += OnRoundEnd;
+        GestureChallenge.Instance.OnRoundEnd -= OnRoundEnd;
     }
 
     void Start()
@@ -75,29 +67,26 @@ public class ChallengeUI : MonoBehaviour
         if (newHighScoreText)
             newHighScoreText.gameObject.SetActive(false);
 
-        feedbackText.text = "";
+        feedbackImage.gameObject.SetActive(false);
         gestureNameText.text = "";
+        countdownText.text = "";
     }
 
     void Update()
     {
-        if (GameManager.Instance.CurrentState != GameState.Playing)
-            return;
+        if (GameManager.Instance.CurrentState != GameState.Playing) return;
 
         float ratio = Mathf.Clamp01(
             GestureChallenge.Instance.TimeRemaining /
             GestureChallenge.Instance.timePerGesture);
 
         timerBar.fillAmount = ratio;
-
-        timerBar.color =
-            ratio > 0.5f ? timerSafeColor :
-            ratio > 0.25f ? timerWarningColor :
-            timerDangerColor;
+        timerBar.color = ratio > 0.5f ? timerSafeColor
+                       : ratio > 0.25f ? timerWarningColor
+                       : timerDangerColor;
     }
 
-    // ── State ─────────────────────────────────────────────
-
+    // ── State ─────────────────────────────────────────────────────
     void OnStateChanged(GameState s)
     {
         startPanel.SetActive(s == GameState.Idle);
@@ -107,9 +96,12 @@ public class ChallengeUI : MonoBehaviour
         if (s == GameState.Countdown)
         {
             gestureNameText.text = "";
-            feedbackText.text = "";
+            feedbackImage.gameObject.SetActive(false);
             StartCoroutine(ShowCountdown());
         }
+
+        if (s == GameState.Playing)
+            countdownText.text = "";
 
         if (s == GameState.GameOver)
             ShowGameOver();
@@ -120,8 +112,8 @@ public class ChallengeUI : MonoBehaviour
         int score = GameManager.Instance.Score;
         int highScore = GameManager.Instance.HighScore;
 
-        finalScoreText.text = $"Score {score}";
-        highScoreText.text = $"Best {highScore}";
+        finalScoreText.text = $"{score}";
+        highScoreText.text = $"{highScore}";
 
         if (newHighScoreText)
             newHighScoreText.gameObject.SetActive(score >= highScore);
@@ -131,28 +123,23 @@ public class ChallengeUI : MonoBehaviour
     {
         for (int i = 3; i >= 1; i--)
         {
-            feedbackText.text = i.ToString();
-            feedbackText.color = Color.white;
-
+            countdownText.text = i.ToString();
+            countdownText.color = Color.white;
             yield return new WaitForSeconds(1f);
         }
 
-        feedbackText.text = "Start!";
-        feedbackText.color = goodColor;
-
+        countdownText.text = "เริ่ม!";
+        countdownText.color = new Color(0.3f, 1f, 0.5f);
         yield return new WaitForSeconds(0.6f);
-
-        feedbackText.text = "";
+        countdownText.text = "";
     }
 
-    // ── Challenge ─────────────────────────────────────────
-
+    // ── Challenge ─────────────────────────────────────────────────
     void OnNewChallenge(GestureData g)
     {
         gestureNameText.text = g.gestureName;
-
-        feedbackText.text = "";
-        feedbackText.color = Color.white;
+        feedbackImage.gameObject.SetActive(false);
+        feedbackImage.color = Color.white;
     }
 
     void OnRoundEnd(ScoreGrade grade, int combo, int multiplier)
@@ -162,100 +149,60 @@ public class ChallengeUI : MonoBehaviour
         switch (grade)
         {
             case ScoreGrade.Perfect:
-                string perfectMsg = combo >= 2
-                    ? $"PERFECT!  x{multiplier}"
-                    : "PERFECT!";
-                StartCoroutine(ShowFeedbackRoutine(perfectMsg, perfectColor));
+                StartCoroutine(ShowFeedbackRoutine(perfectSprite));
                 break;
             case ScoreGrade.Good:
-                StartCoroutine(ShowFeedbackRoutine("Good", goodColor));
+                StartCoroutine(ShowFeedbackRoutine(goodSprite));
                 break;
             case ScoreGrade.Miss:
-                StartCoroutine(ShowFeedbackRoutine("Miss...", missColor));
+                StartCoroutine(ShowFeedbackRoutine(missSprite));
                 break;
         }
     }
 
-    IEnumerator ShowFeedbackRoutine(string msg, Color color)
+    // ── Feedback Helpers ──────────────────────────────────────────
+    void ShowFeedbackSprite(Sprite sprite)
     {
-        feedbackText.text = msg;
-        feedbackText.color = color;
+        if (sprite == null) return;
+        feedbackImage.sprite = sprite;
+        feedbackImage.color = Color.white;
+        feedbackImage.gameObject.SetActive(true);
+    }
+
+    IEnumerator ShowFeedbackRoutine(Sprite sprite)
+    {
+        ShowFeedbackSprite(sprite);
 
         yield return new WaitForSeconds(0.8f);
 
         float t = 0f;
-
         while (t < 0.4f)
         {
             t += Time.deltaTime;
-
-            feedbackText.color = new Color(
-                color.r,
-                color.g,
-                color.b,
-                1f - t / 0.4f
-            );
-
+            feedbackImage.color = new Color(1f, 1f, 1f, 1f - t / 0.4f);
             yield return null;
         }
 
-        feedbackText.text = "";
+        feedbackImage.gameObject.SetActive(false);
     }
 
-    // ── HP Bars ───────────────────────────────────────────
-
+    // ── HP Bars ───────────────────────────────────────────────────
     void OnPlayerHPChanged(int current, int max)
     {
-        float ratio = (float)current / max;
-
-        if (playerHPBar)
-        {
-            playerHPBar.fillAmount = ratio;
-
-            playerHPBar.color =
-                ratio > 0.5f ? hpSafeColor :
-                ratio > 0.25f ? hpWarningColor :
-                hpDangerColor;
-        }
-
-        if (playerHPText)
-            playerHPText.text = $"{current}/{max}";
+        if (playerHPBar) playerHPBar.fillAmount = (float)current / max;
+        if (playerHPText) playerHPText.text = $"{current}/{max}";
     }
 
     void OnGhostHPChanged(int current, int max)
     {
-        float ratio = (float)current / max;
-
-        if (ghostHPBar)
-        {
-            ghostHPBar.fillAmount = ratio;
-
-            ghostHPBar.color =
-                ratio > 0.5f ? hpSafeColor :
-                ratio > 0.25f ? hpWarningColor :
-                hpDangerColor;
-        }
-
-        if (ghostHPText)
-            ghostHPText.text = $"{current}/{max}";
+        if (ghostHPBar) ghostHPBar.fillAmount = (float)current / max;
+        if (ghostHPText) ghostHPText.text = $"{current}/{max}";
     }
 
-    // ── Score ─────────────────────────────────────────────
+    // ── Score ─────────────────────────────────────────────────────
+    void OnScoreChanged(int s) => scoreText.text = $"{s}";
 
-    void OnScoreChanged(int s)
-    {
-        scoreText.text = $"Score: {s}";
-    }
-
-    // ── Buttons ───────────────────────────────────────────
-
-    public void OnStartButton()
-    {
-        GameManager.Instance.StartGame();
-    }
-
-    public void OnRestartButton()
-    {
-        GameManager.Instance.RestartGame();
-    }
+    // ── Buttons ───────────────────────────────────────────────────
+    public void OnStartButton() => GameManager.Instance.StartGame();
+    public void OnRestartButton() => GameManager.Instance.RestartGame();
 }

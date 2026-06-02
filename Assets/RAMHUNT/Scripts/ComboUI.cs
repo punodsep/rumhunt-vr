@@ -6,10 +6,6 @@ public class ComboUI : MonoBehaviour
 {
     public TextMeshProUGUI comboText;
 
-    public Color combo2Color = new Color(1f, 0.9f, 0.2f);
-    public Color combo3Color = new Color(1f, 0.6f, 0.1f);
-    public Color combo4Color = new Color(1f, 0.2f, 0.8f);
-
     Coroutine _anim;
 
     void Start()
@@ -34,12 +30,7 @@ public class ComboUI : MonoBehaviour
 
     IEnumerator ShowCombo(int combo, int multiplier)
     {
-        Color color = combo >= 4 ? combo4Color
-                    : combo >= 3 ? combo3Color
-                    : combo2Color;
-
-        comboText.text = $"COMBO x{multiplier}";
-        comboText.color = new Color(color.r, color.g, color.b, 1f);
+        comboText.text = $"x{multiplier}";
 
         yield return new WaitForSeconds(0.8f);
 
@@ -48,7 +39,6 @@ public class ComboUI : MonoBehaviour
         while (t < 0.4f)
         {
             t += Time.deltaTime;
-            comboText.color = new Color(color.r, color.g, color.b, 1f - t / 0.4f);
             yield return null;
         }
 
