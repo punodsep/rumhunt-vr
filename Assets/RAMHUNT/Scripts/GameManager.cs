@@ -108,7 +108,7 @@ public class GameManager : MonoBehaviour
         ChallengeUI ui = FindFirstObjectByType<ChallengeUI>();
         if (ui != null)
         {
-            ui.highScoreText.text = "Best 0";
+            ui.highScoreText.text = "0";
             if (ui.newHighScoreText)
                 ui.newHighScoreText.gameObject.SetActive(false);
         }
@@ -116,8 +116,12 @@ public class GameManager : MonoBehaviour
         Debug.Log("High Score Reset");
     }
 
-    public void RestartGame() =>
+    // ── Restart ──────────────────────────────────────────────────
+    public void RestartGame()
+    {
+        Instance = null;
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+    }
 
     void SetState(GameState s, bool playerWon = false)
     {

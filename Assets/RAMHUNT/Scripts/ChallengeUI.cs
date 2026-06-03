@@ -115,8 +115,8 @@ public class ChallengeUI : MonoBehaviour
         int score = GameManager.Instance.Score;
         int highScore = GameManager.Instance.HighScore;
 
-        finalScoreText.text = $"Score\n{score}";
-        highScoreText.text = $"Best\n{highScore}";
+        finalScoreText.text = $"{score}";
+        highScoreText.text = $"{highScore}";
 
         if (newHighScoreText)
             newHighScoreText.gameObject.SetActive(score >= highScore);
@@ -134,7 +134,7 @@ public class ChallengeUI : MonoBehaviour
             yield return new WaitForSeconds(1f);
         }
 
-        countdownText.text = "Start!";
+        countdownText.text = "เริ่ม!";
         countdownText.color = new Color(0.3f, 1f, 0.5f);
         yield return new WaitForSeconds(0.6f);
         countdownText.text = "";
@@ -206,7 +206,7 @@ public class ChallengeUI : MonoBehaviour
     }
 
     // ── Score ─────────────────────────────────────────────────────
-    void OnScoreChanged(int s) => scoreText.text = $"Score: {s}";
+    void OnScoreChanged(int s) => scoreText.text = $"{s}";
 
     // ── Buttons ───────────────────────────────────────────────────
     public void OnStartButton() => GameManager.Instance.StartGame();
