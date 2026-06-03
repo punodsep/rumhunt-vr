@@ -12,9 +12,9 @@ public class GameManager : MonoBehaviour
     public int playerMaxHP = 5;
     public int ghostMaxHP = 10;
 
-    public event Action<GameState> OnStateChanged;
-    public event Action<int, int> OnPlayerHPChanged;  // (current, max)
-    public event Action<int, int> OnGhostHPChanged;   // (current, max)
+    public event Action<GameState, bool> OnStateChanged;
+    public event Action<int, int> OnPlayerHPChanged;
+    public event Action<int, int> OnGhostHPChanged;
     public event Action<int> OnScoreChanged;
 
     public GameState CurrentState { get; private set; }
@@ -88,7 +88,6 @@ public class GameManager : MonoBehaviour
     {
         GestureChallenge.Instance.StopChallenge();
 
-        // บันทึก HighScore
         if (Score > HighScore)
         {
             HighScore = Score;
@@ -96,23 +95,20 @@ public class GameManager : MonoBehaviour
             PlayerPrefs.Save();
         }
 
-        SetState(GameState.GameOver);
+        SetState(GameState.GameOver, playerWon);
     }
 
+    // ── Reset HighScore ──────────────────────────────────────────
     public void ResetHighScore()
     {
         HighScore = 0;
-
         PlayerPrefs.DeleteKey(HighScoreKey);
         PlayerPrefs.Save();
 
-        // อัปเดต UI
         ChallengeUI ui = FindFirstObjectByType<ChallengeUI>();
-
         if (ui != null)
         {
             ui.highScoreText.text = "Best 0";
-
             if (ui.newHighScoreText)
                 ui.newHighScoreText.gameObject.SetActive(false);
         }
@@ -123,9 +119,9 @@ public class GameManager : MonoBehaviour
     public void RestartGame() =>
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
 
-    void SetState(GameState s)
+    void SetState(GameState s, bool playerWon = false)
     {
         CurrentState = s;
-        OnStateChanged?.Invoke(s);
+        OnStateChanged?.Invoke(s, playerWon);
     }
 }

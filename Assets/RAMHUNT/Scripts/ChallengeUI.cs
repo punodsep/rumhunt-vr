@@ -12,7 +12,7 @@ public class ChallengeUI : MonoBehaviour
     public Sprite perfectSprite;
     public Sprite goodSprite;
     public Sprite missSprite;
-    public TextMeshProUGUI countdownText;  // สำหรับ 3, 2, 1, Start!
+    public TextMeshProUGUI countdownText;
 
     [Header("HP Bars — Player")]
     public Image playerHPBar;
@@ -29,6 +29,8 @@ public class ChallengeUI : MonoBehaviour
     public GameObject startPanel;
     public GameObject gamePanel;
     public GameObject gameOverPanel;
+    public Image winImage;
+    public Image loseImage;
     public TextMeshProUGUI finalScoreText;
     public TextMeshProUGUI highScoreText;
     public TextMeshProUGUI newHighScoreText;
@@ -64,8 +66,9 @@ public class ChallengeUI : MonoBehaviour
         gamePanel.SetActive(false);
         gameOverPanel.SetActive(false);
 
-        if (newHighScoreText)
-            newHighScoreText.gameObject.SetActive(false);
+        if (winImage) winImage.gameObject.SetActive(false);
+        if (loseImage) loseImage.gameObject.SetActive(false);
+        if (newHighScoreText) newHighScoreText.gameObject.SetActive(false);
 
         feedbackImage.gameObject.SetActive(false);
         gestureNameText.text = "";
@@ -87,7 +90,7 @@ public class ChallengeUI : MonoBehaviour
     }
 
     // ── State ─────────────────────────────────────────────────────
-    void OnStateChanged(GameState s)
+    void OnStateChanged(GameState s, bool playerWon)
     {
         startPanel.SetActive(s == GameState.Idle);
         gamePanel.SetActive(s == GameState.Playing || s == GameState.Countdown);
@@ -104,19 +107,22 @@ public class ChallengeUI : MonoBehaviour
             countdownText.text = "";
 
         if (s == GameState.GameOver)
-            ShowGameOver();
+            ShowGameOver(playerWon);
     }
 
-    void ShowGameOver()
+    void ShowGameOver(bool playerWon)
     {
         int score = GameManager.Instance.Score;
         int highScore = GameManager.Instance.HighScore;
 
-        finalScoreText.text = $"{score}";
-        highScoreText.text = $"{highScore}";
+        finalScoreText.text = $"Score\n{score}";
+        highScoreText.text = $"Best\n{highScore}";
 
         if (newHighScoreText)
             newHighScoreText.gameObject.SetActive(score >= highScore);
+
+        if (winImage) winImage.gameObject.SetActive(playerWon);
+        if (loseImage) loseImage.gameObject.SetActive(!playerWon);
     }
 
     IEnumerator ShowCountdown()
@@ -128,7 +134,7 @@ public class ChallengeUI : MonoBehaviour
             yield return new WaitForSeconds(1f);
         }
 
-        countdownText.text = "เริ่ม!";
+        countdownText.text = "Start!";
         countdownText.color = new Color(0.3f, 1f, 0.5f);
         yield return new WaitForSeconds(0.6f);
         countdownText.text = "";
@@ -200,7 +206,7 @@ public class ChallengeUI : MonoBehaviour
     }
 
     // ── Score ─────────────────────────────────────────────────────
-    void OnScoreChanged(int s) => scoreText.text = $"{s}";
+    void OnScoreChanged(int s) => scoreText.text = $"Score: {s}";
 
     // ── Buttons ───────────────────────────────────────────────────
     public void OnStartButton() => GameManager.Instance.StartGame();
