@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using System.Collections;
 using UnityEngine.SceneManagement;
 
 public enum GameState { Idle, Countdown, Playing, GameOver }
@@ -51,8 +52,20 @@ public class GameManager : MonoBehaviour
         OnPlayerHPChanged?.Invoke(PlayerHP, playerMaxHP);
         OnGhostHPChanged?.Invoke(GhostHP, ghostMaxHP);
 
+        StartCoroutine(StartGameRoutine());
+    }
+
+    IEnumerator StartGameRoutine()
+    {
         SetState(GameState.Countdown);
-        Invoke(nameof(BeginPlaying), 3f);
+
+        while (!AudioManager.Instance.IsOpeningPlaying)
+            yield return null;
+
+        while (AudioManager.Instance.IsOpeningPlaying)
+            yield return null;
+
+        BeginPlaying();
     }
 
     void BeginPlaying()

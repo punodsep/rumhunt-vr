@@ -32,8 +32,9 @@ public class GestureChallenge : MonoBehaviour
     public event Action<GestureData> OnChallengeStart;
     public event Action<ScoreGrade, int, int> OnRoundEnd;
 
-    const float GHOST_DANCE_PREVIEW = 3.75f; // รอดูผีรำก่อน
-    const float PLAYER_WINDOW = 4.50f; // เวลาที่ผู้เล่นทำ
+    const float GHOST_DANCE_PREVIEW = 4.5f;
+    const float PLAYER_WINDOW = 4.5f;
+    const float REACTION_TIME = 3f;
 
     public GestureData CurrentTarget { get; private set; }
     public float TimeRemaining { get; private set; }
@@ -78,33 +79,36 @@ public class GestureChallenge : MonoBehaviour
         while (IsActive)
         {
             _roundEnded = false;
-            PickNewGesture(); // fire OnNewChallenge → Ghost เริ่มรำ
 
-            // ── Phase 1: ดูผีรำ (ไม่มี UI ชื่อท่า) ─────────────────
+            PickNewGesture();
+
+            // ดูผีรำ 4.5 วิ
             yield return new WaitForSeconds(GHOST_DANCE_PREVIEW);
 
-            // ── Phase 2: แสดง UI + เริ่มนับถอยหลัง ─────────────────
+            // ผู้เล่นทำตาม 4.5 วิ
             TimeRemaining = PLAYER_WINDOW;
-            OnChallengeStart?.Invoke(CurrentTarget); // ← UI โผล่
 
-            while (TimeRemaining > 0f && IsActive && !_roundEnded)
+            OnChallengeStart?.Invoke(CurrentTarget);
+
+            while (TimeRemaining > 0f &&
+                   IsActive &&
+                   !_roundEnded)
             {
                 TimeRemaining -= Time.deltaTime;
                 yield return null;
             }
 
-            if (!IsActive) yield break;
+            if (!IsActive)
+                yield break;
 
             if (!_roundEnded)
             {
                 _roundEnded = true;
                 ProcessGrade(ScoreGrade.Miss);
-                yield return new WaitForSeconds(0.8f);
             }
-            else
-            {
-                yield return new WaitForSeconds(0.5f);
-            }
+
+            // รอ PlayReact เล่นครบ 3 วิ
+            yield return new WaitForSeconds(REACTION_TIME);
         }
     }
 
@@ -119,7 +123,7 @@ public class GestureChallenge : MonoBehaviour
         _roundEnded = true;
 
         // เวลาที่ใช้ไป
-        float elapsed = timePerGesture - TimeRemaining;
+        float elapsed = PLAYER_WINDOW - TimeRemaining;
 
         // หยุด timer
         TimeRemaining = 0f;

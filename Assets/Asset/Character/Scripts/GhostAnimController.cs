@@ -4,14 +4,13 @@ using UnityEngine;
 public class GhostAnimController : MonoBehaviour
 {
     public static GhostAnimController Instance { get; private set; }
+    public bool IsReacting { get; private set; }
 
     Animator animator;
     Opening opening;
     WinEnding ending;
 
     const int FLOAT_UP_LAYER = 1;
-
-    bool isBusy;
 
     void Awake()
     {
@@ -66,23 +65,25 @@ public class GhostAnimController : MonoBehaviour
 
     IEnumerator PlayOpeningSequence()
     {
-        isBusy = true;
-
         SetVisible(true);
 
         animator.SetLayerWeight(FLOAT_UP_LAYER, 1f);
 
-        yield return new WaitForSeconds(0.2f);
+        yield return new WaitForSeconds(3f); // FloatUp 3 วิ
+
+        animator.SetLayerWeight(FLOAT_UP_LAYER, 0f);
 
         animator.SetTrigger("TriggerOpening");
 
         opening?.PlayOpeningVFX();
 
-        yield return new WaitForSeconds(3f);
+        yield return new WaitForSeconds(3f); // Opening Dance
 
-        animator.SetLayerWeight(FLOAT_UP_LAYER, 0f);
-
-        isBusy = false;
+        while (AudioManager.Instance != null &&
+               AudioManager.Instance.IsOpeningPlaying)
+        {
+            yield return null;
+        }
     }
 
     // =====================================================
@@ -91,20 +92,15 @@ public class GhostAnimController : MonoBehaviour
 
     public IEnumerator PlayDanceForGesture(int danceIndex)
     {
-        while (isBusy)
-            yield return null;
-
-        isBusy = true;
-
-        animator.SetInteger("DanceIndex", danceIndex);
+        animator.SetInteger("DanceIndex", 0);
 
         yield return null;
 
-        yield return new WaitForSeconds(3.75f);
+        animator.SetInteger("DanceIndex", danceIndex);
+
+        yield return new WaitForSeconds(9f);
 
         animator.SetInteger("DanceIndex", 0);
-
-        isBusy = false;
     }
 
     // =====================================================
@@ -113,26 +109,29 @@ public class GhostAnimController : MonoBehaviour
 
     IEnumerator PlayReactionSequence(ScoreGrade grade)
     {
-        while (isBusy)
-            yield return null;
-
-        isBusy = true;
+        IsReacting = true;
 
         switch (grade)
         {
             case ScoreGrade.Perfect:
 
+                animator.ResetTrigger("TriggerHurt_01");
+                animator.ResetTrigger("TriggerHurt_02");
+
                 animator.SetTrigger("TriggerHurt_02");
 
-                yield return new WaitForSeconds(1.2f);
+                yield return new WaitForSeconds(3f);
 
                 break;
 
             case ScoreGrade.Good:
 
+                animator.ResetTrigger("TriggerHurt_01");
+                animator.ResetTrigger("TriggerHurt_02");
+
                 animator.SetTrigger("TriggerHurt_01");
 
-                yield return new WaitForSeconds(1.0f);
+                yield return new WaitForSeconds(3f);
 
                 break;
 
@@ -146,14 +145,14 @@ public class GhostAnimController : MonoBehaviour
 
                 animator.SetInteger("AttackIndex", attackIndex);
 
-                yield return new WaitForSeconds(1.5f);
+                yield return new WaitForSeconds(3f);
 
                 animator.SetInteger("AttackIndex", 0);
 
                 break;
         }
 
-        isBusy = false;
+        IsReacting = false;
     }
 
     // =====================================================
@@ -162,8 +161,6 @@ public class GhostAnimController : MonoBehaviour
 
     IEnumerator PlayEndingSequence(bool playerWon)
     {
-        isBusy = true;
-
         if (playerWon)
         {
             animator.SetTrigger("TriggerEndWin");
@@ -178,8 +175,6 @@ public class GhostAnimController : MonoBehaviour
 
             yield return new WaitForSeconds(4f);
         }
-
-        isBusy = false;
     }
 
     public void SetVisible(bool visible)

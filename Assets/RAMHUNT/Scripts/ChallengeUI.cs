@@ -129,16 +129,25 @@ public class ChallengeUI : MonoBehaviour
 
     IEnumerator ShowCountdown()
     {
+        while (!AudioManager.Instance.IsOpeningPlaying)
+            yield return null;
+
+        while (AudioManager.Instance.IsOpeningPlaying)
+            yield return null;
+
         for (int i = 3; i >= 1; i--)
         {
             countdownText.text = i.ToString();
             countdownText.color = Color.white;
+
             yield return new WaitForSeconds(1f);
         }
 
         countdownText.text = "เริ่ม!";
         countdownText.color = new Color(0.3f, 1f, 0.5f);
+
         yield return new WaitForSeconds(0.6f);
+
         countdownText.text = "";
     }
 

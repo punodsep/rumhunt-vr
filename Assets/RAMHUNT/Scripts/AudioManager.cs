@@ -16,6 +16,15 @@ public class AudioManager : MonoBehaviour
     [Header("Settings")]
     public float fadeOutDuration = 2f;
 
+    public bool IsOpeningPlaying =>
+    openingBGM != null &&
+    openingBGM.isPlaying;
+
+    public float GetOpeningDuration() =>
+        openingBGM.clip != null
+            ? openingBGM.clip.length
+            : 9.17f;
+
     void Awake()
     {
         if (Instance != null) { Destroy(gameObject); return; }
@@ -89,6 +98,4 @@ public class AudioManager : MonoBehaviour
         menuBGM_B.Play();
     }
 
-    public float GetOpeningDuration() =>
-        openingBGM.clip != null ? openingBGM.clip.length : 9.17f;
 }
