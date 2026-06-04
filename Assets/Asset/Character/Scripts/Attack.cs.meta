@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: 98d7a51aa842e9a478ff1f71940f77d1
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - attack1VFX: {fileID: 6882116249847192011, guid: c4b2ddd78a478394da66879a43e7af99, type: 3}
+  - attack2VFX: {fileID: 6882116249847192011, guid: c4b2ddd78a478394da66879a43e7af99, type: 3}
+  - vfxSpawnPoint: {fileID: 170627752090198096, guid: 71b863ab7646d36419ecaf9e8825673c, type: 3}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

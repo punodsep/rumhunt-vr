@@ -1,0 +1,18 @@
+fileFormatVersion: 2
+guid: 3db2d75c502e53f43affa7b97d296024
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 298233
+  packageName: Stylized Dissolve Effects
+  packageVersion: 1.0
+  assetPath: Assets/KarmaLabs/Stylized Dissolve Effects/Scripts/DissolveController.cs
+  uploadId: 699710
