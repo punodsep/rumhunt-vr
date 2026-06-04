@@ -1,4 +1,4 @@
-﻿using System.Collections;
+﻿/*using System.Collections;
 using UnityEngine;
 
 public class GhostAnimationTester : MonoBehaviour
@@ -109,4 +109,4 @@ public class GhostAnimationTester : MonoBehaviour
     {
         if (_animator != null) _animator.SetInteger("AttackIndex", index);
     }
-}
+}*/

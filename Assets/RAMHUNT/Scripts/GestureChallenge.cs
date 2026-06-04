@@ -29,7 +29,11 @@ public class GestureChallenge : MonoBehaviour
     public int goodPoints = 100;
 
     public event Action<GestureData> OnNewChallenge;
+    public event Action<GestureData> OnChallengeStart;
     public event Action<ScoreGrade, int, int> OnRoundEnd;
+
+    const float GHOST_DANCE_PREVIEW = 3.75f; // รอดูผีรำก่อน
+    const float PLAYER_WINDOW = 4.50f; // เวลาที่ผู้เล่นทำ
 
     public GestureData CurrentTarget { get; private set; }
     public float TimeRemaining { get; private set; }
@@ -74,10 +78,14 @@ public class GestureChallenge : MonoBehaviour
         while (IsActive)
         {
             _roundEnded = false;
+            PickNewGesture(); // fire OnNewChallenge → Ghost เริ่มรำ
 
-            TimeRemaining = timePerGesture;
+            // ── Phase 1: ดูผีรำ (ไม่มี UI ชื่อท่า) ─────────────────
+            yield return new WaitForSeconds(GHOST_DANCE_PREVIEW);
 
-            PickNewGesture();
+            // ── Phase 2: แสดง UI + เริ่มนับถอยหลัง ─────────────────
+            TimeRemaining = PLAYER_WINDOW;
+            OnChallengeStart?.Invoke(CurrentTarget); // ← UI โผล่
 
             while (TimeRemaining > 0f && IsActive && !_roundEnded)
             {
@@ -85,21 +93,17 @@ public class GestureChallenge : MonoBehaviour
                 yield return null;
             }
 
-            if (!IsActive)
-                yield break;
+            if (!IsActive) yield break;
 
             if (!_roundEnded)
             {
-                // หมดเวลา = Miss
                 _roundEnded = true;
-
                 ProcessGrade(ScoreGrade.Miss);
-
-                yield return new WaitForSeconds(1.2f);
+                yield return new WaitForSeconds(0.8f);
             }
             else
             {
-                yield return new WaitForSeconds(0.8f);
+                yield return new WaitForSeconds(0.5f);
             }
         }
     }
@@ -159,24 +163,25 @@ public class GestureChallenge : MonoBehaviour
 
     void PickNewGesture()
     {
-        if (gesturePool == null || gesturePool.Length == 0)
-            return;
+        if (gesturePool == null || gesturePool.Length == 0) return;
 
         GestureData next = CurrentTarget;
-
+        int index = 0;
         int tries = 0;
 
         while (next == CurrentTarget && tries < 10)
         {
-            next = gesturePool[
-                UnityEngine.Random.Range(0, gesturePool.Length)
-            ];
-
+            index = UnityEngine.Random.Range(0, gesturePool.Length);
+            next = gesturePool[index];
             tries++;
         }
 
         CurrentTarget = next;
+        OnNewChallenge?.Invoke(CurrentTarget); // Ghost เริ่มรำทันที
 
-        OnNewChallenge?.Invoke(CurrentTarget);
+        // PickNewGesture
+        if (GhostAnimController.Instance != null)
+            GameManager.Instance.StartCoroutine(
+                GhostAnimController.Instance.PlayDanceForGesture(index + 1));
     }
 }

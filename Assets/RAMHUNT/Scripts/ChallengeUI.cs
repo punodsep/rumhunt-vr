@@ -47,6 +47,7 @@ public class ChallengeUI : MonoBehaviour
         GameManager.Instance.OnGhostHPChanged += OnGhostHPChanged;
         GameManager.Instance.OnScoreChanged += OnScoreChanged;
         GestureChallenge.Instance.OnNewChallenge += OnNewChallenge;
+        GestureChallenge.Instance.OnChallengeStart += OnChallengeStart;
         GestureChallenge.Instance.OnRoundEnd += OnRoundEnd;
     }
 
@@ -57,6 +58,7 @@ public class ChallengeUI : MonoBehaviour
         GameManager.Instance.OnGhostHPChanged -= OnGhostHPChanged;
         GameManager.Instance.OnScoreChanged -= OnScoreChanged;
         GestureChallenge.Instance.OnNewChallenge -= OnNewChallenge;
+        GestureChallenge.Instance.OnChallengeStart -= OnChallengeStart;
         GestureChallenge.Instance.OnRoundEnd -= OnRoundEnd;
     }
 
@@ -143,6 +145,14 @@ public class ChallengeUI : MonoBehaviour
     // ── Challenge ─────────────────────────────────────────────────
     void OnNewChallenge(GestureData g)
     {
+        gestureNameText.text = "";
+        feedbackImage.gameObject.SetActive(false);
+        timerBar.fillAmount = 0f; // reset bar
+    }
+
+    // ผู้เล่นเริ่มทำได้ → แสดง UI
+    void OnChallengeStart(GestureData g)
+    {
         gestureNameText.text = g.gestureName;
         feedbackImage.gameObject.SetActive(false);
         feedbackImage.color = Color.white;
@@ -211,4 +221,6 @@ public class ChallengeUI : MonoBehaviour
     // ── Buttons ───────────────────────────────────────────────────
     public void OnStartButton() => GameManager.Instance.StartGame();
     public void OnRestartButton() => GameManager.Instance.RestartGame();
+
+
 }
