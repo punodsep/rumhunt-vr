@@ -40,27 +40,6 @@ public class ChallengeUI : MonoBehaviour
     public Color timerWarningColor = new Color(1f, 0.6f, 0.2f);
     public Color timerDangerColor = new Color(1f, 0.2f, 0.2f);
 
-    void OnEnable()
-    {
-        GameManager.Instance.OnStateChanged += OnStateChanged;
-        GameManager.Instance.OnPlayerHPChanged += OnPlayerHPChanged;
-        GameManager.Instance.OnGhostHPChanged += OnGhostHPChanged;
-        GameManager.Instance.OnScoreChanged += OnScoreChanged;
-        GestureChallenge.Instance.OnNewChallenge += OnNewChallenge;
-        GestureChallenge.Instance.OnChallengeStart += OnChallengeStart;
-        GestureChallenge.Instance.OnRoundEnd += OnRoundEnd;
-    }
-
-    void OnDisable()
-    {
-        GameManager.Instance.OnStateChanged -= OnStateChanged;
-        GameManager.Instance.OnPlayerHPChanged -= OnPlayerHPChanged;
-        GameManager.Instance.OnGhostHPChanged -= OnGhostHPChanged;
-        GameManager.Instance.OnScoreChanged -= OnScoreChanged;
-        GestureChallenge.Instance.OnNewChallenge -= OnNewChallenge;
-        GestureChallenge.Instance.OnChallengeStart -= OnChallengeStart;
-        GestureChallenge.Instance.OnRoundEnd -= OnRoundEnd;
-    }
 
     void Start()
     {
@@ -75,6 +54,15 @@ public class ChallengeUI : MonoBehaviour
         feedbackImage.gameObject.SetActive(false);
         gestureNameText.text = "";
         countdownText.text = "";
+
+        GameManager.Instance.OnStateChanged += OnStateChanged;
+        GameManager.Instance.OnPlayerHPChanged += OnPlayerHPChanged;
+        GameManager.Instance.OnGhostHPChanged += OnGhostHPChanged;
+        GameManager.Instance.OnScoreChanged += OnScoreChanged;
+
+        GestureChallenge.Instance.OnNewChallenge += OnNewChallenge;
+        GestureChallenge.Instance.OnChallengeStart += OnChallengeStart;
+        GestureChallenge.Instance.OnRoundEnd += OnRoundEnd;
     }
 
     void Update()
@@ -91,7 +79,24 @@ public class ChallengeUI : MonoBehaviour
                        : timerDangerColor;
     }
 
-    // ── State ─────────────────────────────────────────────────────
+    void OnDestroy()
+    {
+        if (GameManager.Instance != null)
+        {
+            GameManager.Instance.OnStateChanged -= OnStateChanged;
+            GameManager.Instance.OnPlayerHPChanged -= OnPlayerHPChanged;
+            GameManager.Instance.OnGhostHPChanged -= OnGhostHPChanged;
+            GameManager.Instance.OnScoreChanged -= OnScoreChanged;
+        }
+
+        if (GestureChallenge.Instance != null)
+        {
+            GestureChallenge.Instance.OnNewChallenge -= OnNewChallenge;
+            GestureChallenge.Instance.OnChallengeStart -= OnChallengeStart;
+            GestureChallenge.Instance.OnRoundEnd -= OnRoundEnd;
+        }
+    }
+
     void OnStateChanged(GameState s, bool playerWon)
     {
         startPanel.SetActive(s == GameState.Idle);
@@ -151,15 +156,13 @@ public class ChallengeUI : MonoBehaviour
         countdownText.text = "";
     }
 
-    // ── Challenge ─────────────────────────────────────────────────
     void OnNewChallenge(GestureData g)
     {
         gestureNameText.text = "";
         feedbackImage.gameObject.SetActive(false);
-        timerBar.fillAmount = 0f; // reset bar
+        timerBar.fillAmount = 0f;
     }
 
-    // ผู้เล่นเริ่มทำได้ → แสดง UI
     void OnChallengeStart(GestureData g)
     {
         gestureNameText.text = g.gestureName;
@@ -185,7 +188,6 @@ public class ChallengeUI : MonoBehaviour
         }
     }
 
-    // ── Feedback Helpers ──────────────────────────────────────────
     void ShowFeedbackSprite(Sprite sprite)
     {
         if (sprite == null) return;
@@ -211,7 +213,6 @@ public class ChallengeUI : MonoBehaviour
         feedbackImage.gameObject.SetActive(false);
     }
 
-    // ── HP Bars ───────────────────────────────────────────────────
     void OnPlayerHPChanged(int current, int max)
     {
         if (playerHPBar) playerHPBar.fillAmount = (float)current / max;
@@ -224,10 +225,8 @@ public class ChallengeUI : MonoBehaviour
         if (ghostHPText) ghostHPText.text = $"{current}/{max}";
     }
 
-    // ── Score ─────────────────────────────────────────────────────
     void OnScoreChanged(int s) => scoreText.text = $"{s}";
 
-    // ── Buttons ───────────────────────────────────────────────────
     public void OnStartButton() => GameManager.Instance.StartGame();
     public void OnRestartButton() => GameManager.Instance.RestartGame();
 

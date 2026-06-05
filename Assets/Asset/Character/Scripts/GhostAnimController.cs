@@ -53,7 +53,6 @@ public class GhostAnimController : MonoBehaviour
         GameManager.Instance.StartCoroutine(PlayReactionSequence(grade));
     }
 
-    // ── Opening ───────────────────────────────────────────────────
     IEnumerator PlayOpeningSequence()
     {
         SetVisible(true);
@@ -70,10 +69,8 @@ public class GhostAnimController : MonoBehaviour
             !AudioManager.Instance.IsOpeningPlaying);
     }
 
-    // ── Dance ─────────────────────────────────────────────────────
-    // รัน Coroutine นี้บน GameManager แล้วส่ง callback กลับมา
     public IEnumerator PlayDanceForGesture(int danceIndex,
-        System.Action onHalfway)  // ← callback ตอนครึ่งทาง
+        System.Action onHalfway) 
     {
         IsDancing = true;
 
@@ -83,22 +80,19 @@ public class GhostAnimController : MonoBehaviour
 
         string stateName = $"Dance_0{danceIndex}";
 
-        // รอให้เข้า state Dance ก่อน
         yield return new WaitUntil(() =>
             _animator.GetCurrentAnimatorStateInfo(0).IsName(stateName));
 
         bool halfFired = false;
 
-        // วนรอจนจบ animation
         while (true)
         {
             var info = _animator.GetCurrentAnimatorStateInfo(0);
 
-            if (!info.IsName(stateName)) break; // ออกจาก state = จบแล้ว
+            if (!info.IsName(stateName)) break;
 
             float t = info.normalizedTime % 1f;
 
-            // ครึ่งทาง → fire callback ครั้งเดียว
             if (!halfFired && t >= 0.5f)
             {
                 halfFired = true;
@@ -112,7 +106,6 @@ public class GhostAnimController : MonoBehaviour
         IsDancing = false;
     }
 
-    // ── Reaction ──────────────────────────────────────────────────
     IEnumerator PlayReactionSequence(ScoreGrade grade)
     {
         IsReacting = true;
@@ -144,15 +137,12 @@ public class GhostAnimController : MonoBehaviour
                 break;
         }
 
-        // รอให้เข้า state Reaction
         yield return new WaitUntil(() =>
             _animator.GetCurrentAnimatorStateInfo(0).IsName(stateName));
 
-        // รอจน normalizedTime >= 0.95 (เกือบจบ)
         yield return new WaitUntil(() =>
             _animator.GetCurrentAnimatorStateInfo(0).normalizedTime >= 0.95f);
 
-        // รอกลับ Idle
         yield return new WaitUntil(() =>
             _animator.GetCurrentAnimatorStateInfo(0).IsName("Idle"));
 
@@ -162,7 +152,6 @@ public class GhostAnimController : MonoBehaviour
         IsReacting = false;
     }
 
-    // ── Ending ────────────────────────────────────────────────────
     IEnumerator PlayEndingSequence(bool playerWon)
     {
         if (playerWon)

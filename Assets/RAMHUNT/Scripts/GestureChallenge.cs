@@ -31,6 +31,7 @@ public class GestureChallenge : MonoBehaviour
 
     // TimeRemaining สำหรับ UI timer bar
     public float PlayerWindow => _playerWindow;
+
     public float TimeRemaining { get; private set; }
     public GestureData CurrentTarget { get; private set; }
     public bool IsActive { get; private set; }
@@ -66,26 +67,19 @@ public class GestureChallenge : MonoBehaviour
             _roundEnded = false;
             _playerWindowOpen = false;
 
-            // ── เริ่ม Dance + รับ callback ตอนครึ่งทาง ────────────
             int index = PickNewGesture();
 
-            // Coroutine Dance รันบน GameManager
-            // callback ตอนครึ่งทาง → เปิด player window
-            bool danceFinished = false;
             GameManager.Instance.StartCoroutine(
                 GhostAnimController.Instance.PlayDanceForGesture(
                     index + 1,
                     onHalfway: () =>
                     {
                         _playerWindowOpen = true;
-                        OnChallengeStart?.Invoke(CurrentTarget); // UI โผล่
+                        OnChallengeStart?.Invoke(CurrentTarget);
                     }));
 
-            // ── รอจน player window เปิด แล้วนับเวลา ───────────────
             yield return new WaitUntil(() => _playerWindowOpen);
 
-            // เริ่มนับเวลา (ใช้ normalizedTime ครึ่งหลัง ≈ 4.5s)
-            // ไม่กำหนด fixed time — รอ Dance จบเอง
             float startTime = Time.time;
 
             while (!_roundEnded && IsActive &&
@@ -98,14 +92,12 @@ public class GestureChallenge : MonoBehaviour
 
             if (!IsActive) yield break;
 
-            // หมดเวลา Dance = Miss
             if (!_roundEnded)
             {
                 _roundEnded = true;
                 ProcessGrade(ScoreGrade.Miss);
             }
 
-            // ── รอ Reaction จบ (ตรวจจาก IsReacting) ──────────────
             yield return new WaitUntil(() =>
                 GhostAnimController.Instance == null ||
                 !GhostAnimController.Instance.IsReacting);
@@ -115,7 +107,7 @@ public class GestureChallenge : MonoBehaviour
     void OnGestureDetected(GestureData detected)
     {
         if (!IsActive || CurrentTarget == null || _roundEnded) return;
-        if (!_playerWindowOpen) return; // ยังไม่ถึงครึ่งทาง
+        if (!_playerWindowOpen) return;
         if (detected != CurrentTarget) return;
 
         _roundEnded = true;
@@ -131,7 +123,6 @@ public class GestureChallenge : MonoBehaviour
 
     float _windowOpenTime;
 
-    // ── PickNewGesture คืน index ──────────────────────────────────
     int PickNewGesture()
     {
         if (gesturePool == null || gesturePool.Length == 0) return 0;

@@ -41,7 +41,6 @@ public class GameManager : MonoBehaviour
             ResetHighScore();
     }
 
-    // ── Start / End ──────────────────────────────────────────────
     public void StartGame()
     {
         Score = 0;
@@ -74,14 +73,12 @@ public class GameManager : MonoBehaviour
         GestureChallenge.Instance.StartChallenge();
     }
 
-    // ── Score ────────────────────────────────────────────────────
     public void AddScore(int points)
     {
         Score += points;
         OnScoreChanged?.Invoke(Score);
     }
 
-    // ── Damage ───────────────────────────────────────────────────
     public void DamageGhost(int dmg)
     {
         GhostHP = Mathf.Max(0, GhostHP - dmg);
@@ -96,7 +93,6 @@ public class GameManager : MonoBehaviour
         if (PlayerHP <= 0) EndGame(false);
     }
 
-    // ── End ──────────────────────────────────────────────────────
     void EndGame(bool playerWon)
     {
         GestureChallenge.Instance.StopChallenge();
@@ -111,7 +107,6 @@ public class GameManager : MonoBehaviour
         SetState(GameState.GameOver, playerWon);
     }
 
-    // ── Reset HighScore ──────────────────────────────────────────
     public void ResetHighScore()
     {
         HighScore = 0;
@@ -129,11 +124,9 @@ public class GameManager : MonoBehaviour
         Debug.Log("High Score Reset");
     }
 
-    // ── Restart ──────────────────────────────────────────────────
     public void RestartGame()
     {
-        Instance = null;
-        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 
     void SetState(GameState s, bool playerWon = false)
