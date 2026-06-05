@@ -82,8 +82,8 @@ public class ChallengeUI : MonoBehaviour
         if (GameManager.Instance.CurrentState != GameState.Playing) return;
 
         float ratio = Mathf.Clamp01(
-            GestureChallenge.Instance.TimeRemaining /
-            GestureChallenge.Instance.timePerGesture);
+    GestureChallenge.Instance.TimeRemaining /
+    GestureChallenge.Instance.PlayerWindow);
 
         timerBar.fillAmount = ratio;
         timerBar.color = ratio > 0.5f ? timerSafeColor

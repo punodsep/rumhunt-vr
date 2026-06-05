@@ -15,10 +15,7 @@ public class GestureChallenge : MonoBehaviour
     public GestureData[] gesturePool;
 
     [Header("Timing")]
-    public float timePerGesture = 5f;
-
-    [Tooltip("ทำภายในกี่วินาทีแรก = Perfect")]
-    public float perfectWindow = 2f;
+    public float perfectWindow = 3f;
 
     [Header("Damage to Ghost")]
     public int perfectGhostDmg = 3;
@@ -32,46 +29,34 @@ public class GestureChallenge : MonoBehaviour
     public event Action<GestureData> OnChallengeStart;
     public event Action<ScoreGrade, int, int> OnRoundEnd;
 
-    const float GHOST_DANCE_PREVIEW = 4.5f;
-    const float PLAYER_WINDOW = 4.5f;
-    const float REACTION_TIME = 3f;
-
-    public GestureData CurrentTarget { get; private set; }
+    // TimeRemaining สำหรับ UI timer bar
+    public float PlayerWindow => _playerWindow;
     public float TimeRemaining { get; private set; }
+    public GestureData CurrentTarget { get; private set; }
     public bool IsActive { get; private set; }
 
+    float _playerWindow;   // ครึ่งหลังของ Dance anim
     bool _roundEnded;
+    bool _playerWindowOpen;
+    int _perfectCombo;
     Coroutine _challengeRoutine;
 
-    int _perfectCombo = 0;
+    void Awake() => Instance = this;
 
-    void Awake()
-    {
-        Instance = this;
-    }
-
-    void OnEnable()
-    {
-        detector.OnGestureDetected += OnGestureDetected;
-    }
-
-    void OnDisable()
-    {
-        detector.OnGestureDetected -= OnGestureDetected;
-    }
+    void OnEnable() => detector.OnGestureDetected += OnGestureDetected;
+    void OnDisable() => detector.OnGestureDetected -= OnGestureDetected;
 
     public void StartChallenge()
     {
         IsActive = true;
+        _perfectCombo = 0;
         _challengeRoutine = StartCoroutine(ChallengeLoop());
     }
 
     public void StopChallenge()
     {
         IsActive = false;
-
-        if (_challengeRoutine != null)
-            StopCoroutine(_challengeRoutine);
+        if (_challengeRoutine != null) StopCoroutine(_challengeRoutine);
     }
 
     IEnumerator ChallengeLoop()
@@ -79,95 +64,77 @@ public class GestureChallenge : MonoBehaviour
         while (IsActive)
         {
             _roundEnded = false;
+            _playerWindowOpen = false;
 
-            PickNewGesture();
+            // ── เริ่ม Dance + รับ callback ตอนครึ่งทาง ────────────
+            int index = PickNewGesture();
 
-            // ดูผีรำ 4.5 วิ
-            yield return new WaitForSeconds(GHOST_DANCE_PREVIEW);
+            // Coroutine Dance รันบน GameManager
+            // callback ตอนครึ่งทาง → เปิด player window
+            bool danceFinished = false;
+            GameManager.Instance.StartCoroutine(
+                GhostAnimController.Instance.PlayDanceForGesture(
+                    index + 1,
+                    onHalfway: () =>
+                    {
+                        _playerWindowOpen = true;
+                        OnChallengeStart?.Invoke(CurrentTarget); // UI โผล่
+                    }));
 
-            // ผู้เล่นทำตาม 4.5 วิ
-            TimeRemaining = PLAYER_WINDOW;
+            // ── รอจน player window เปิด แล้วนับเวลา ───────────────
+            yield return new WaitUntil(() => _playerWindowOpen);
 
-            OnChallengeStart?.Invoke(CurrentTarget);
+            // เริ่มนับเวลา (ใช้ normalizedTime ครึ่งหลัง ≈ 4.5s)
+            // ไม่กำหนด fixed time — รอ Dance จบเอง
+            float startTime = Time.time;
 
-            while (TimeRemaining > 0f &&
-                   IsActive &&
-                   !_roundEnded)
+            while (!_roundEnded && IsActive &&
+                   GhostAnimController.Instance.IsDancing)
             {
-                TimeRemaining -= Time.deltaTime;
+                TimeRemaining = Mathf.Max(0f,
+                    PlayerWindow - (Time.time - startTime));
                 yield return null;
             }
 
-            if (!IsActive)
-                yield break;
+            if (!IsActive) yield break;
 
+            // หมดเวลา Dance = Miss
             if (!_roundEnded)
             {
                 _roundEnded = true;
                 ProcessGrade(ScoreGrade.Miss);
             }
 
-            // รอ PlayReact เล่นครบ 3 วิ
-            yield return new WaitForSeconds(REACTION_TIME);
+            // ── รอ Reaction จบ (ตรวจจาก IsReacting) ──────────────
+            yield return new WaitUntil(() =>
+                GhostAnimController.Instance == null ||
+                !GhostAnimController.Instance.IsReacting);
         }
     }
 
     void OnGestureDetected(GestureData detected)
     {
-        if (!IsActive || CurrentTarget == null || _roundEnded)
-            return;
-
-        if (detected != CurrentTarget)
-            return;
+        if (!IsActive || CurrentTarget == null || _roundEnded) return;
+        if (!_playerWindowOpen) return; // ยังไม่ถึงครึ่งทาง
+        if (detected != CurrentTarget) return;
 
         _roundEnded = true;
 
-        // เวลาที่ใช้ไป
-        float elapsed = PLAYER_WINDOW - TimeRemaining;
-
-        // หยุด timer
+        float elapsed = Time.time - _windowOpenTime;
         TimeRemaining = 0f;
 
-        // Perfect / Good
-        ScoreGrade grade =
-            elapsed <= perfectWindow
-            ? ScoreGrade.Perfect
-            : ScoreGrade.Good;
+        ScoreGrade grade = elapsed <= perfectWindow
+            ? ScoreGrade.Perfect : ScoreGrade.Good;
 
         ProcessGrade(grade);
     }
 
-    void ProcessGrade(ScoreGrade grade)
+    float _windowOpenTime;
+
+    // ── PickNewGesture คืน index ──────────────────────────────────
+    int PickNewGesture()
     {
-        int multiplier = 1;
-
-        switch (grade)
-        {
-            case ScoreGrade.Perfect:
-                _perfectCombo++;
-                multiplier = Mathf.Max(1, _perfectCombo); // x1, x2, x3...
-                GameManager.Instance.AddScore(perfectPoints * multiplier);
-                GameManager.Instance.DamageGhost(perfectGhostDmg);
-                break;
-
-            case ScoreGrade.Good:
-                _perfectCombo = 0; // หยุด combo
-                GameManager.Instance.AddScore(goodPoints);
-                GameManager.Instance.DamageGhost(goodGhostDmg);
-                break;
-
-            case ScoreGrade.Miss:
-                _perfectCombo = 0; // หยุด combo
-                GameManager.Instance.DamagePlayer(1);
-                break;
-        }
-
-        OnRoundEnd?.Invoke(grade, _perfectCombo, multiplier);
-    }
-
-    void PickNewGesture()
-    {
-        if (gesturePool == null || gesturePool.Length == 0) return;
+        if (gesturePool == null || gesturePool.Length == 0) return 0;
 
         GestureData next = CurrentTarget;
         int index = 0;
@@ -181,11 +148,31 @@ public class GestureChallenge : MonoBehaviour
         }
 
         CurrentTarget = next;
-        OnNewChallenge?.Invoke(CurrentTarget); // Ghost เริ่มรำทันที
+        OnNewChallenge?.Invoke(CurrentTarget);
+        return index;
+    }
 
-        // PickNewGesture
-        if (GhostAnimController.Instance != null)
-            GameManager.Instance.StartCoroutine(
-                GhostAnimController.Instance.PlayDanceForGesture(index + 1));
+    void ProcessGrade(ScoreGrade grade)
+    {
+        int multiplier = 1;
+        switch (grade)
+        {
+            case ScoreGrade.Perfect:
+                _perfectCombo++;
+                multiplier = Mathf.Max(1, _perfectCombo);
+                GameManager.Instance.AddScore(perfectPoints * multiplier);
+                GameManager.Instance.DamageGhost(perfectGhostDmg);
+                break;
+            case ScoreGrade.Good:
+                _perfectCombo = 0;
+                GameManager.Instance.AddScore(goodPoints);
+                GameManager.Instance.DamageGhost(goodGhostDmg);
+                break;
+            case ScoreGrade.Miss:
+                _perfectCombo = 0;
+                GameManager.Instance.DamagePlayer(1);
+                break;
+        }
+        OnRoundEnd?.Invoke(grade, _perfectCombo, multiplier);
     }
 }

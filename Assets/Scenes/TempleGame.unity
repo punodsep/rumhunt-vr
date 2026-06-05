@@ -7440,9 +7440,21 @@ PrefabInstance:
       propertyPath: m_Name
       value: GameObject 1 1
       objectReference: {fileID: 0}
+    - target: {fileID: 61674327860515879, guid: 187e1d751e76470498de75764dd0c143, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2447127785232988834, guid: 187e1d751e76470498de75764dd0c143, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3380965489587430585, guid: 187e1d751e76470498de75764dd0c143, type: 3}
       propertyPath: instanceId
       value: fd805454-60d4-4d6a-a1d3-e3edd8667c7d
+      objectReference: {fileID: 0}
+    - target: {fileID: 4329085018828051481, guid: 187e1d751e76470498de75764dd0c143, type: 3}
+      propertyPath: playerMaxHP
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 5278478149786034624, guid: 187e1d751e76470498de75764dd0c143, type: 3}
       propertyPath: m_LocalPosition.x
