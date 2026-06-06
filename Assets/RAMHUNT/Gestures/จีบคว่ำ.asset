@@ -1,0 +1,127 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6e0bdfabd9fc9b64bbf6eddb10adff94, type: 3}
+  m_Name: "\u0E08\u0E35\u0E1A\u0E04\u0E27\u0E48\u0E33"
+  m_EditorClassIdentifier: Assembly-CSharp::GestureData
+  gestureName: "\u0E08\u0E35\u0E1A\u0E04\u0E27\u0E48\u0E33"
+  leftHandBones:
+  - boneId: 0
+    localPosition: {x: -0.0000000059371814, y: 0.00000013271347, z: 0.00000012665987}
+  - boneId: 1
+    localPosition: {x: -0.0009797385, y: 0.0059916847, z: -0.065778725}
+  - boneId: 2
+    localPosition: {x: 0.02248589, y: -0.017263874, z: -0.028030891}
+  - boneId: 3
+    localPosition: {x: 0.029940514, y: -0.04245469, z: -0.008875314}
+  - boneId: 4
+    localPosition: {x: 0.030208986, y: -0.06548144, z: 0.015856631}
+  - boneId: 5
+    localPosition: {x: 0.03953155, y: -0.084284484, z: 0.028731115}
+  - boneId: 6
+    localPosition: {x: 0.015463198, y: -0.0070993705, z: -0.027705569}
+  - boneId: 7
+    localPosition: {x: 0.022570847, y: -0.0013245661, z: 0.030217677}
+  - boneId: 8
+    localPosition: {x: 0.021854863, y: -0.030283488, z: 0.054699294}
+  - boneId: 9
+    localPosition: {x: 0.020753166, y: -0.052394237, z: 0.06472796}
+  - boneId: 10
+    localPosition: {x: 0.018278452, y: -0.07340635, z: 0.072051}
+  - boneId: 11
+    localPosition: {x: -0.0007461003, y: -0.003448572, z: -0.02986782}
+  - boneId: 12
+    localPosition: {x: 0.000746098, y: 0.003448658, z: 0.029867902}
+  - boneId: 13
+    localPosition: {x: -0.0011522718, y: -0.013960838, z: 0.069060266}
+  - boneId: 14
+    localPosition: {x: -0.0025116156, y: -0.026662048, z: 0.09346965}
+  - boneId: 15
+    localPosition: {x: -0.004172155, y: -0.03765084, z: 0.11585544}
+  - boneId: 16
+    localPosition: {x: -0.015972096, y: -0.000023935456, z: -0.031002976}
+  - boneId: 17
+    localPosition: {x: -0.018445008, y: -0.00053736847, z: 0.022915244}
+  - boneId: 18
+    localPosition: {x: -0.025120717, y: 0.0024642874, z: 0.061218277}
+  - boneId: 19
+    localPosition: {x: -0.02961331, y: 0.003155627, z: 0.087400064}
+  - boneId: 20
+    localPosition: {x: -0.032612115, y: 0.0040777167, z: 0.111577824}
+  - boneId: 21
+    localPosition: {x: -0.023978256, y: -0.003428162, z: -0.03170514}
+  - boneId: 22
+    localPosition: {x: -0.036033735, y: -0.0076993126, z: 0.012117289}
+  - boneId: 23
+    localPosition: {x: -0.046160106, y: 0.0022271862, z: 0.03936909}
+  - boneId: 24
+    localPosition: {x: -0.054044396, y: 0.0063783075, z: 0.057621717}
+  - boneId: 25
+    localPosition: {x: -0.06042124, y: 0.01184085, z: 0.07791041}
+  rightHandBones:
+  - boneId: 0
+    localPosition: {x: 0.00000006949995, y: 0.000000033527613, z: 0.000000014901161}
+  - boneId: 1
+    localPosition: {x: 0.00081364566, y: 0.0060469024, z: -0.065822795}
+  - boneId: 2
+    localPosition: {x: -0.021987736, y: -0.017650194, z: -0.027898885}
+  - boneId: 3
+    localPosition: {x: -0.028452395, y: -0.042882398, z: -0.008440301}
+  - boneId: 4
+    localPosition: {x: -0.02109124, y: -0.06450686, z: 0.016462937}
+  - boneId: 5
+    localPosition: {x: -0.023685968, y: -0.08388954, z: 0.03142246}
+  - boneId: 6
+    localPosition: {x: -0.015297189, y: -0.007264859, z: -0.027661394}
+  - boneId: 7
+    localPosition: {x: -0.022736914, y: -0.0012694974, z: 0.03017351}
+  - boneId: 8
+    localPosition: {x: -0.02140213, y: -0.031648967, z: 0.05284033}
+  - boneId: 9
+    localPosition: {x: -0.019900158, y: -0.055772796, z: 0.055382036}
+  - boneId: 10
+    localPosition: {x: -0.01719651, y: -0.07793273, z: 0.053684272}
+  - boneId: 11
+    localPosition: {x: 0.0009123103, y: -0.0035037436, z: -0.029823892}
+  - boneId: 12
+    localPosition: {x: -0.00091217173, y: 0.0035038108, z: 0.029823944}
+  - boneId: 13
+    localPosition: {x: 0.004367123, y: -0.008840227, z: 0.07059753}
+  - boneId: 14
+    localPosition: {x: 0.0076362425, y: -0.02089059, z: 0.09515515}
+  - boneId: 15
+    localPosition: {x: 0.010992741, y: -0.031550806, z: 0.11750975}
+  - boneId: 16
+    localPosition: {x: 0.015806071, y: 0.000031183474, z: -0.031047076}
+  - boneId: 17
+    localPosition: {x: 0.018279012, y: -0.0004822919, z: 0.022871159}
+  - boneId: 18
+    localPosition: {x: 0.027494868, y: -0.0021008095, z: 0.060727954}
+  - boneId: 19
+    localPosition: {x: 0.033253226, y: -0.006823346, z: 0.08623664}
+  - boneId: 20
+    localPosition: {x: 0.03746975, y: -0.010708165, z: 0.10993357}
+  - boneId: 21
+    localPosition: {x: 0.023812199, y: -0.0033729197, z: -0.031749148}
+  - boneId: 22
+    localPosition: {x: 0.03586775, y: -0.0076442594, z: 0.012073226}
+  - boneId: 23
+    localPosition: {x: 0.048946727, y: -0.0048436094, z: 0.039729074}
+  - boneId: 24
+    localPosition: {x: 0.058635216, y: -0.0052947756, z: 0.05757495}
+  - boneId: 25
+    localPosition: {x: 0.06726176, y: -0.0041963076, z: 0.07773712}
+  leftHandPosRelHead: {x: -0.12538743, y: 1.1423894, z: 0.36763144}
+  rightHandPosRelHead: {x: 0.10890055, y: 1.1361771, z: 0.3386011}
+  boneThreshold: 0.08
+  positionThreshold: 0.25
+  minMatchBones: 12
+  holdDuration: 0.2
