@@ -114,22 +114,20 @@ public class GhostAnimController : MonoBehaviour
     {
         IsReacting = true;
 
-        string stateName = "";
-
         switch (grade)
         {
             case ScoreGrade.Perfect:
                 _animator.ResetTrigger("TriggerHurt_01");
                 _animator.ResetTrigger("TriggerHurt_02");
                 _animator.SetTrigger("TriggerHurt_02");
-                stateName = "Hurt_02";
+                yield return StartCoroutine(WaitForStateAndFinish("Hurt_02"));
                 break;
 
             case ScoreGrade.Good:
                 _animator.ResetTrigger("TriggerHurt_01");
                 _animator.ResetTrigger("TriggerHurt_02");
                 _animator.SetTrigger("TriggerHurt_01");
-                stateName = "Hurt_01";
+                yield return StartCoroutine(WaitForStateAndFinish("Hurt_01"));
                 break;
 
             case ScoreGrade.Miss:
@@ -137,23 +135,48 @@ public class GhostAnimController : MonoBehaviour
                 _animator.SetInteger("AttackIndex", 0);
                 yield return null;
                 _animator.SetInteger("AttackIndex", idx);
-                stateName = $"Attack_0{idx}";
+                yield return StartCoroutine(WaitForStateAndFinish($"Attack_0{idx}"));
+                _animator.SetInteger("AttackIndex", 0);
                 break;
         }
 
-        yield return new WaitUntil(() =>
-            _animator.GetCurrentAnimatorStateInfo(0).IsName(stateName));
-
-        yield return new WaitUntil(() =>
-            _animator.GetCurrentAnimatorStateInfo(0).normalizedTime >= 0.95f);
-
-        yield return new WaitUntil(() =>
-            _animator.GetCurrentAnimatorStateInfo(0).IsName("Idle"));
-
-        if (grade == ScoreGrade.Miss)
-            _animator.SetInteger("AttackIndex", 0);
-
         IsReacting = false;
+    }
+
+    // รอให้เข้า state แล้วเล่นจบ มี timeout กันค้าง
+    IEnumerator WaitForStateAndFinish(string stateName, float timeout = 5f)
+    {
+        float elapsed = 0f;
+
+        // รอเข้า state (timeout 5s กันค้าง)
+        while (!_animator.GetCurrentAnimatorStateInfo(0).IsName(stateName))
+        {
+            elapsed += Time.deltaTime;
+            if (elapsed >= timeout)
+            {
+                Debug.LogWarning($"[Ghost] WaitForState timeout: {stateName}");
+                yield break;
+            }
+            yield return null;
+        }
+
+        // รอเกือบจบ
+        yield return new WaitUntil(() =>
+            _animator.GetCurrentAnimatorStateInfo(0).normalizedTime >= 0.95f ||
+            !_animator.GetCurrentAnimatorStateInfo(0).IsName(stateName));
+
+        // รอกลับ Idle (timeout)
+        elapsed = 0f;
+        while (!_animator.GetCurrentAnimatorStateInfo(0).IsName("Idle"))
+        {
+            elapsed += Time.deltaTime;
+            if (elapsed >= timeout)
+            {
+                Debug.LogWarning($"[Ghost] WaitForIdle timeout after: {stateName}");
+                yield break;
+            }
+            yield return null;
+        }
     }
 
     IEnumerator PlayEndingSequence(bool playerWon)
