@@ -70,13 +70,15 @@ public class GestureChallenge : MonoBehaviour
             int index = PickNewGesture();
 
             GameManager.Instance.StartCoroutine(
-                GhostAnimController.Instance.PlayDanceForGesture(
-                    index + 1,
-                    onHalfway: () =>
-                    {
-                        _playerWindowOpen = true;
-                        OnChallengeStart?.Invoke(CurrentTarget);
-                    }));
+    GhostAnimController.Instance.PlayDanceForGesture(
+        index + 1,
+        onHalfway: (halfLength) =>
+        {
+            _playerWindow = halfLength;
+            _windowOpenTime = Time.time;
+            _playerWindowOpen = true;
+            OnChallengeStart?.Invoke(CurrentTarget);
+        }));
 
             yield return new WaitUntil(() => _playerWindowOpen);
 

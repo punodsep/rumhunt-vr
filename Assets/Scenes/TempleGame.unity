@@ -7512,6 +7512,10 @@ PrefabInstance:
       propertyPath: instanceId
       value: 6701ad41-601b-4661-86ba-b0687dae4d35
       objectReference: {fileID: 0}
+    - target: {fileID: 6992840280945021810, guid: 187e1d751e76470498de75764dd0c143, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 7963265042117839074, guid: 187e1d751e76470498de75764dd0c143, type: 3}
       propertyPath: m_Enabled
       value: 1

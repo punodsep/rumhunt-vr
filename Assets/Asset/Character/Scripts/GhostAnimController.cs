@@ -69,8 +69,9 @@ public class GhostAnimController : MonoBehaviour
             !AudioManager.Instance.IsOpeningPlaying);
     }
 
+    // GhostAnimController.cs — แก้ PlayDanceForGesture
     public IEnumerator PlayDanceForGesture(int danceIndex,
-        System.Action onHalfway) 
+        System.Action<float> onHalfway) // ← เปลี่ยนเป็น Action<float> ส่งเวลากลับมา
     {
         IsDancing = true;
 
@@ -83,12 +84,15 @@ public class GhostAnimController : MonoBehaviour
         yield return new WaitUntil(() =>
             _animator.GetCurrentAnimatorStateInfo(0).IsName(stateName));
 
+        // ดึงความยาว animation จริงๆ
+        float clipLength = _animator.GetCurrentAnimatorStateInfo(0).length;
+        float halfLength = clipLength * 0.5f; // ครึ่งหลัง = 4.5s
+
         bool halfFired = false;
 
         while (true)
         {
             var info = _animator.GetCurrentAnimatorStateInfo(0);
-
             if (!info.IsName(stateName)) break;
 
             float t = info.normalizedTime % 1f;
@@ -96,7 +100,7 @@ public class GhostAnimController : MonoBehaviour
             if (!halfFired && t >= 0.5f)
             {
                 halfFired = true;
-                onHalfway?.Invoke();
+                onHalfway?.Invoke(halfLength); // ส่งเวลาครึ่งหลังกลับ
             }
 
             yield return null;
