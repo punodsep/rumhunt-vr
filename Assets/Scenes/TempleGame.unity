@@ -13913,7 +13913,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Opening
   vfxPrefab: {fileID: 1349109543675923630, guid: ecfe8ef5c454aca48881987e41d99f10, type: 3}
   vfxSpawnPoint: {fileID: 0}
-  vfxDelay: 0.3
+  vfxDelay: 0
 --- !u!114 &1849876362
 MonoBehaviour:
   m_ObjectHideFlags: 0
