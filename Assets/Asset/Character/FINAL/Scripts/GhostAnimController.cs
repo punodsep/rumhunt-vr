@@ -114,20 +114,27 @@ public class GhostAnimController : MonoBehaviour
     {
         IsReacting = true;
 
+        // รอให้อยู่ที่ Idle ก่อนทุกครั้ง กันกรณี reaction ก่อนหน้ายังไม่จบ
+        yield return new WaitUntil(() =>
+            _animator.GetCurrentAnimatorStateInfo(0).IsName("Idle"));
+
         switch (grade)
         {
             case ScoreGrade.Perfect:
+                // Clear trigger queue ก่อนเสมอ
                 _animator.ResetTrigger("TriggerHurt_01");
                 _animator.ResetTrigger("TriggerHurt_02");
-                _animator.SetTrigger("TriggerHurt_02");
-                yield return StartCoroutine(WaitForStateAndFinish("Hurt_02"));
+                yield return null; // รอ 1 frame ให้ reset มีผล
+                _animator.SetTrigger("TriggerHurt_01");
+                yield return StartCoroutine(WaitForStateAndFinish("Hit_01")); // ← ชื่อจริงใน Animator
                 break;
 
             case ScoreGrade.Good:
                 _animator.ResetTrigger("TriggerHurt_01");
                 _animator.ResetTrigger("TriggerHurt_02");
-                _animator.SetTrigger("TriggerHurt_01");
-                yield return StartCoroutine(WaitForStateAndFinish("Hurt_01"));
+                yield return null;
+                _animator.SetTrigger("TriggerHurt_02");
+                yield return StartCoroutine(WaitForStateAndFinish("Hit_02")); // ← ชื่อจริงใน Animator
                 break;
 
             case ScoreGrade.Miss:
@@ -148,33 +155,37 @@ public class GhostAnimController : MonoBehaviour
     {
         float elapsed = 0f;
 
-        // รอเข้า state (timeout 5s กันค้าง)
+        // รอเข้า state
         while (!_animator.GetCurrentAnimatorStateInfo(0).IsName(stateName))
         {
             elapsed += Time.deltaTime;
             if (elapsed >= timeout)
             {
-                Debug.LogWarning($"[Ghost] WaitForState timeout: {stateName}");
+                Debug.LogWarning($"[Ghost] Enter timeout: {stateName}");
                 yield break;
             }
             yield return null;
         }
 
-        // รอเกือบจบ
-        yield return new WaitUntil(() =>
-            _animator.GetCurrentAnimatorStateInfo(0).normalizedTime >= 0.95f ||
-            !_animator.GetCurrentAnimatorStateInfo(0).IsName(stateName));
-
-        // รอกลับ Idle (timeout)
+        // รอจนเกือบจบ — ไม่รอกลับ Idle เพราะ Idle loop ได้นาน
         elapsed = 0f;
-        while (!_animator.GetCurrentAnimatorStateInfo(0).IsName("Idle"))
+        while (true)
         {
+            var info = _animator.GetCurrentAnimatorStateInfo(0);
+
+            // ออกจาก state แล้ว = จบแล้ว
+            if (!info.IsName(stateName)) break;
+
+            // เกือบจบ = ออกได้
+            if (info.normalizedTime >= 0.95f) break;
+
             elapsed += Time.deltaTime;
             if (elapsed >= timeout)
             {
-                Debug.LogWarning($"[Ghost] WaitForIdle timeout after: {stateName}");
-                yield break;
+                Debug.LogWarning($"[Ghost] Finish timeout: {stateName}");
+                break;
             }
+
             yield return null;
         }
     }
