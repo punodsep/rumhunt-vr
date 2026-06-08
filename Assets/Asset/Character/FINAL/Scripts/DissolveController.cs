@@ -1,56 +1,87 @@
-﻿using System.Collections;
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.VFX;
+
 namespace KarmaLabs.DissolveEffect
 {
-
-public class DissolveController : MonoBehaviour
-{
-        [Header("Skinned Meshes ")]
-        public SkinnedMeshRenderer[] SkinnedMeshes;  // เปลี่ยนจาก MeshRenderer Mesh
-
+    public class DissolveController : MonoBehaviour
+    {
+        private Coroutine dissolveCoroutine;
         public VisualEffect VFXGraph;
+        private List<Material> allMaterials = new List<Material>();
         public float dissolveRate = 0.0125f;
         public float refreshRate = 0.025f;
 
-        private Coroutine dissolveCoroutine;
-        private Material[][] _allMaterials;  // เก็บ material ของทุก mesh
-
         void Start()
         {
-            // เก็บ materials ของทุกชิ้น
-            _allMaterials = new Material[SkinnedMeshes.Length][];
-            for (int i = 0; i < SkinnedMeshes.Length; i++)
-                _allMaterials[i] = SkinnedMeshes[i].materials;
+            FetchAllMaterials();
         }
 
-        // เรียกจาก GhostAnimController
-        public void StartDissolveFromController()
+        void FetchAllMaterials()
         {
-            if (dissolveCoroutine == null)
-                dissolveCoroutine = StartCoroutine(DissolveCo());
+            allMaterials.Clear();
+            Renderer[] renderers = GetComponentsInChildren<Renderer>();
+
+            foreach (Renderer ren in renderers)
+            {
+                if (ren is MeshRenderer || ren is SkinnedMeshRenderer)
+                {
+                    Material[] mats = ren.materials;
+                    foreach (Material mat in mats)
+                    {
+                        if (mat != null && mat.HasProperty("_DissolveAmount"))
+                        {
+                            allMaterials.Add(mat);
+                        }
+                    }
+                }
+            }
+        }
+
+        void Update()
+        {
+            if (Input.GetKeyDown(KeyCode.Space))
+            {
+                if (dissolveCoroutine == null)
+                {
+                    dissolveCoroutine = StartCoroutine(DissolveCo());
+                }
+            }
+
+            if (Input.GetKeyDown(KeyCode.R))
+            {
+                ResetEffect();
+            }
         }
 
         IEnumerator DissolveCo()
         {
-            if (VFXGraph != null) VFXGraph.Play();
+            if (allMaterials.Count == 0)
+            {
+                yield break;
+            }
+
+            if (VFXGraph != null)
+            {
+                VFXGraph.Play();
+            }
 
             float counter = 0;
-            while (counter < 1f)
+            while (allMaterials[0].GetFloat("_DissolveAmount") < 2)
             {
                 counter += dissolveRate;
-                // set ทุก mesh ทุก material พร้อมกัน
-                foreach (var mats in _allMaterials)
-                    foreach (var mat in mats)
-                        mat.SetFloat("_DissolveAmount", counter);
-
+                for (int i = 0; i < allMaterials.Count; i++)
+                {
+                    allMaterials[i].SetFloat("_DissolveAmount", counter);
+                }
                 yield return new WaitForSeconds(refreshRate);
             }
 
             dissolveCoroutine = null;
         }
 
-        public void ResetEffect()
+        private void ResetEffect()
         {
             if (dissolveCoroutine != null)
             {
@@ -58,11 +89,22 @@ public class DissolveController : MonoBehaviour
                 dissolveCoroutine = null;
             }
 
-            foreach (var mats in _allMaterials)
-                foreach (var mat in mats)
-                    mat.SetFloat("_DissolveAmount", 0);
+            if (allMaterials.Count == 0)
+            {
+                return;
+            }
 
-            if (VFXGraph != null) { VFXGraph.Stop(); VFXGraph.Play(); }
+            for (int i = 0; i < allMaterials.Count; i++)
+            {
+                allMaterials[i].SetFloat("_DissolveAmount", 0);
+            }
+
+            if (VFXGraph != null)
+            {
+                VFXGraph.Stop();
+            }
+
+            dissolveCoroutine = StartCoroutine(DissolveCo());
         }
     }
 }
