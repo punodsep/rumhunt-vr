@@ -316,22 +316,22 @@ VisualEffect:
       - m_Value: {x: -0.010778324, y: 0.95906997, z: 0.282964}
         m_Name: up
         m_Overridden: 1
-      - m_Value: {x: 328.23712, y: 338.3178, z: -0.0000050208155}
+      - m_Value: {x: 23.62105, y: 344.38736, z: -0.00001723919}
         m_Name: Line Tip_angles
         m_Overridden: 1
-      - m_Value: {x: -0.725823, y: 2.3303795, z: 2.3233218}
+      - m_Value: {x: -1.0547096, y: 0.48550224, z: 1.162719}
         m_Name: Line Tip_position
         m_Overridden: 1
-      - m_Value: {x: 99.99987, y: 99.999855, z: 99.99936}
+      - m_Value: {x: 99.9998, y: 99.99932, z: 99.99999}
         m_Name: Line Tip_scale
         m_Overridden: 1
-      - m_Value: {x: 328.23712, y: 338.3178, z: -0.0000050208155}
+      - m_Value: {x: 23.62105, y: 344.38736, z: -0.00001723919}
         m_Name: Line Bottom_angles
         m_Overridden: 1
-      - m_Value: {x: 0.08320732, y: 0.9746249, z: 0.28847778}
+      - m_Value: {x: -0.73246694, y: 1.0091308, z: 0.009557426}
         m_Name: Line Bottom_position
         m_Overridden: 1
-      - m_Value: {x: 99.99987, y: 99.999855, z: 99.99936}
+      - m_Value: {x: 99.9998, y: 99.99932, z: 99.99999}
         m_Name: Line Bottom_scale
         m_Overridden: 1
     m_Vector4f:
