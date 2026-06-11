@@ -101,7 +101,10 @@ public class ChallengeUI : MonoBehaviour
     {
         startPanel.SetActive(s == GameState.Idle);
         gamePanel.SetActive(s == GameState.Playing || s == GameState.Countdown);
-        gameOverPanel.SetActive(s == GameState.GameOver);
+
+        // ปิด Game Over Panel ไว้ก่อน
+        if (s != GameState.GameOver)
+            gameOverPanel.SetActive(false);
 
         if (s == GameState.Countdown)
         {
@@ -114,7 +117,7 @@ public class ChallengeUI : MonoBehaviour
             countdownText.text = "";
 
         if (s == GameState.GameOver)
-            ShowGameOver(playerWon);
+            StartCoroutine(ShowGameOverDelayed(playerWon));
     }
 
     void ShowGameOver(bool playerWon)
@@ -130,6 +133,17 @@ public class ChallengeUI : MonoBehaviour
 
         if (winImage) winImage.gameObject.SetActive(playerWon);
         if (loseImage) loseImage.gameObject.SetActive(!playerWon);
+    }
+
+    IEnumerator ShowGameOverDelayed(bool playerWon)
+    {
+
+        yield return new WaitForSeconds(11f);
+
+        gamePanel.SetActive(false);
+        gameOverPanel.SetActive(true);
+
+        ShowGameOver(playerWon);
     }
 
     IEnumerator ShowCountdown()
