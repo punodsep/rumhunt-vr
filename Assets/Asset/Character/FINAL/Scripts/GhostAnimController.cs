@@ -126,6 +126,7 @@ public class GhostAnimController : MonoBehaviour
                 _animator.ResetTrigger("TriggerHurt_02");
                 yield return null; // รอ 1 frame ให้ reset มีผล
                 _animator.SetTrigger("TriggerHurt_01");
+                SFXManager.Instance?.PlayPlayerAttack();
                 yield return StartCoroutine(WaitForStateAndFinish("Hit_01")); // ← ชื่อจริงใน Animator
                 break;
 
@@ -134,6 +135,7 @@ public class GhostAnimController : MonoBehaviour
                 _animator.ResetTrigger("TriggerHurt_02");
                 yield return null;
                 _animator.SetTrigger("TriggerHurt_02");
+                SFXManager.Instance?.PlayPlayerAttack();
                 yield return StartCoroutine(WaitForStateAndFinish("Hit_02")); // ← ชื่อจริงใน Animator
                 break;
 

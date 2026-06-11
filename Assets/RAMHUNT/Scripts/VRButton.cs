@@ -46,6 +46,8 @@ public class VRButton : MonoBehaviour
 
     System.Collections.IEnumerator PressSequence()
     {
+        SFXManager.Instance?.PlayUIClick();
+
         // เปลี่ยนเป็น pressed sprite
         if (buttonImage && pressedSprite)
             buttonImage.sprite = pressedSprite;
