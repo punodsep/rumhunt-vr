@@ -11,7 +11,7 @@ public class GhostAnimController : MonoBehaviour
     Opening _opening;
     //WinEnding _ending;
 
-    const int FLOAT_UP_LAYER = 1;
+    //const int FLOAT_UP_LAYER = 1;
 
     void Awake()
     {
@@ -57,9 +57,9 @@ public class GhostAnimController : MonoBehaviour
     {
         SetVisible(true);
 
-        _animator.SetLayerWeight(FLOAT_UP_LAYER, 1f);
-        yield return new WaitForSeconds(3f);
-        _animator.SetLayerWeight(FLOAT_UP_LAYER, 0f);
+        //_animator.SetLayerWeight(FLOAT_UP_LAYER, 1f);
+        //yield return new WaitForSeconds(3f);
+        //_animator.SetLayerWeight(FLOAT_UP_LAYER, 0f);
 
         _animator.SetTrigger("TriggerOpening");
         _opening?.PlayOpeningVFX();
