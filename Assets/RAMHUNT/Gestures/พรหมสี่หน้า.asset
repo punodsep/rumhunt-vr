@@ -121,7 +121,7 @@ MonoBehaviour:
     localPosition: {x: 0.053294692, y: -0.0002943813, z: 0.08276282}
   leftHandPosRelHead: {x: -0.1584847, y: 1.4863048, z: 0.20334342}
   rightHandPosRelHead: {x: 0.12705517, y: 1.4989346, z: 0.21760085}
-  boneThreshold: 0.072
-  positionThreshold: 0.125
+  boneThreshold: 0.045
+  positionThreshold: 0.13
   minMatchBones: 26
   holdDuration: 0.5
