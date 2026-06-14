@@ -7827,7 +7827,7 @@ MonoBehaviour:
   sfxGhostDie: {fileID: 8300000, guid: ecf8527be629cb740ac51f7570e37240, type: 3}
   sfxMiss: {fileID: 8300000, guid: 6ded9f784e0b4ac4b8a02efcc4e2fabb, type: 3}
   sfxPerfect: {fileID: 8300000, guid: 5fbfff71fb7935d4d8390cb7bbaa80c7, type: 3}
-  sfxPlayerAttack: {fileID: 8300000, guid: f35c878502ed5994d9e99ada0a5941a1, type: 3}
+  sfxPlayerAttack: {fileID: 8300000, guid: 27dedc46ddb396d43ab6ad6092398cbf, type: 3}
   sfxPlayerDie: {fileID: 8300000, guid: 06ea9fdaf64d1b447a083bed5e198075, type: 3}
   sfxUIClick: {fileID: 8300000, guid: 004c850c4a561f443bc6a03b6d487e6f, type: 3}
   comboDelay: 0.2
