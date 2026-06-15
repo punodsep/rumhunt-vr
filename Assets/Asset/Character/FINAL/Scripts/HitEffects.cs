@@ -6,13 +6,15 @@ public class HitEffects : MonoBehaviour
     public ParticleSystem hitEffectPrefab;
     public Transform effectSpawnPoint;
 
+    //public float forwardOffset = 0.5f;
+
     public void CharacterEffects_OnHit()
     {
         if (hitEffectPrefab == null || effectSpawnPoint == null) return;
 
         
-        float forwardOffset = 1f; 
-        Vector3 spawnPos = effectSpawnPoint.position + transform.forward * forwardOffset;
+        
+        Vector3 spawnPos = effectSpawnPoint.position;
 
         ParticleSystem effect = Instantiate(
             hitEffectPrefab,
