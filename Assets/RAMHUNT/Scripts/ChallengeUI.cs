@@ -14,6 +14,12 @@ public class ChallengeUI : MonoBehaviour
     public Sprite missSprite;
     public TextMeshProUGUI countdownText;
 
+    [Header("Countdown Sprites (3-2-1)")]
+    public Image countdownImage;
+    public Sprite countdown3Sprite;
+    public Sprite countdown2Sprite;
+    public Sprite countdown1Sprite;
+
     [Header("HP Bars — Player")]
     public Image playerHPBar;
     public TextMeshProUGUI playerHPText;
@@ -54,6 +60,8 @@ public class ChallengeUI : MonoBehaviour
         feedbackImage.gameObject.SetActive(false);
         gestureNameText.text = "";
         countdownText.text = "";
+
+        if (countdownImage) countdownImage.gameObject.SetActive(false);
 
         GameManager.Instance.OnStateChanged += OnStateChanged;
         GameManager.Instance.OnPlayerHPChanged += OnPlayerHPChanged;
@@ -114,7 +122,10 @@ public class ChallengeUI : MonoBehaviour
         }
 
         if (s == GameState.Playing)
+        {
             countdownText.text = "";
+            if (countdownImage) countdownImage.gameObject.SetActive(false);
+        }
 
         if (s == GameState.GameOver)
             StartCoroutine(ShowGameOverDelayed(playerWon));
@@ -154,20 +165,32 @@ public class ChallengeUI : MonoBehaviour
         while (AudioManager.Instance.IsOpeningPlaying)
             yield return null;
 
-        for (int i = 3; i >= 1; i--)
-        {
-            countdownText.text = i.ToString();
-            countdownText.color = Color.white;
+        // กันปัญหา frame แรก panel/canvas ยัง render ไม่ทัน ทำให้เลข 3 ไม่ขึ้น
+        yield return null;
+        yield return new WaitForEndOfFrame();
 
+        // นับ 3 -> 2 -> 1 ด้วย sprite แทน text
+        Sprite[] countdownSprites = { countdown3Sprite, countdown2Sprite, countdown1Sprite };
+
+        for (int i = 0; i < countdownSprites.Length; i++)
+        {
+            ShowCountdownSprite(countdownSprites[i]);
+            Canvas.ForceUpdateCanvases();
             yield return new WaitForSeconds(1f);
         }
 
-        countdownText.text = "เริ่ม!";
-        countdownText.color = new Color(0.3f, 1f, 0.5f);
-
-        yield return new WaitForSeconds(0.6f);
-
+        if (countdownImage) countdownImage.gameObject.SetActive(false);
         countdownText.text = "";
+    }
+
+    void ShowCountdownSprite(Sprite sprite)
+    {
+        countdownText.text = "";
+
+        if (countdownImage == null || sprite == null) return;
+
+        countdownImage.sprite = sprite;
+        countdownImage.gameObject.SetActive(true);
     }
 
     void OnNewChallenge(GestureData g)
