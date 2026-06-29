@@ -176,6 +176,7 @@ public class ChallengeUI : MonoBehaviour
         {
             ShowCountdownSprite(countdownSprites[i]);
             Canvas.ForceUpdateCanvases();
+            SFXManager.Instance?.PlayCountdown();
             yield return new WaitForSeconds(1f);
         }
 

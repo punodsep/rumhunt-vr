@@ -8066,6 +8066,7 @@ MonoBehaviour:
   sfxPlayerAttack: {fileID: 8300000, guid: 41b1ada87f7f131428ec7b718d243d8c, type: 3}
   sfxPlayerDie: {fileID: 8300000, guid: 06ea9fdaf64d1b447a083bed5e198075, type: 3}
   sfxUIClick: {fileID: 8300000, guid: 004c850c4a561f443bc6a03b6d487e6f, type: 3}
+  sfxCountdown: {fileID: 8300000, guid: a13f51d7840247a4d91df68f163459e4, type: 3}
   comboDelay: 0.2
   ghostAttackDelay: 1.2
   playerAttackDelay: 1.2
@@ -11060,7 +11061,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &560392479
 RectTransform:
   m_ObjectHideFlags: 0
@@ -11100,7 +11101,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: abcb2776522869a4ab9f7d5f95cd8e73, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 06998f9c68bb2cf45951b111aba78755, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1

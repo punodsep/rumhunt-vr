@@ -14,6 +14,7 @@ public class SFXManager : MonoBehaviour
     public AudioClip sfxPlayerAttack;
     public AudioClip sfxPlayerDie;
     public AudioClip sfxUIClick;
+    public AudioClip sfxCountdown;
 
     [Header("Delay")]
     public float comboDelay = 0.1f;
@@ -92,6 +93,7 @@ public class SFXManager : MonoBehaviour
 
     public void PlayUIClick() => Play(sfxUIClick);
     public void PlayPlayerAttack() => Play(sfxPlayerAttack);
+    public void PlayCountdown() => Play(sfxCountdown);
 
     // ── Helpers ───────────────────────────────────────────────────
     public void Play(AudioClip clip)
