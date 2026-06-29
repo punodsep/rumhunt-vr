@@ -182,6 +182,8 @@ public class ChallengeUI : MonoBehaviour
 
         if (countdownImage) countdownImage.gameObject.SetActive(false);
         countdownText.text = "";
+
+        SFXManager.Instance?.PlayStart();
     }
 
     void ShowCountdownSprite(Sprite sprite)

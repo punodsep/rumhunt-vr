@@ -8067,7 +8067,7 @@ MonoBehaviour:
   sfxPlayerDie: {fileID: 8300000, guid: 06ea9fdaf64d1b447a083bed5e198075, type: 3}
   sfxUIClick: {fileID: 8300000, guid: 004c850c4a561f443bc6a03b6d487e6f, type: 3}
   sfxCountdown: {fileID: 8300000, guid: a13f51d7840247a4d91df68f163459e4, type: 3}
-  sfxStart: {fileID: 8300000, guid: 79b92a96e42f2c74fa8995f1670ec3b3, type: 3}
+  sfxStart: {fileID: 8300000, guid: 94db88af87652d94eb21379bcf13cc90, type: 3}
   comboDelay: 0.2
   ghostAttackDelay: 1.2
   playerAttackDelay: 1.2
